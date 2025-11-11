@@ -474,7 +474,7 @@ export default function NewYearGames() {
 
   if (printAllGames) {
     return (
-      <div className="print-page bg-white">
+      <div className="print-page bg-white p-8">
         <style>{`
           @media print {
             body { margin: 0; padding: 10px; background: white; }
@@ -669,7 +669,31 @@ export default function NewYearGames() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-red-200 via-amber-200 to-green-200 p-8">
-      <div className="max-w-7xl mx-auto">
+      <div className="relative max-w-7xl mx-auto">
+
+      <div className="mb-8">
+          <Button
+            onClick={() => window.location.href = '/'}
+            className="group relative px-8 py-4 text-xl font-bold rounded-xl overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-2xl"
+          >
+            <div className="absolute inset-0 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 animate-gradient-shift"></div>
+            <div className="absolute inset-0 bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            <span className="relative z-10 flex items-center gap-3">
+              <svg 
+                className="w-6 h-6 transform group-hover:-translate-x-1 transition-transform duration-300" 
+                fill="none" 
+                stroke="currentColor" 
+                viewBox="0 0 24 24"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+              </svg>
+              Գլխավոր էջ
+              <Sparkles className="w-5 h-5 animate-pulse" />
+            </span>
+          </Button>
+        </div>
+
+
         <header className="text-center mb-12 bg-white bg-opacity-80 rounded-3xl p-8 shadow-2xl">
           <div className="flex items-center justify-center mb-6">
             <Snowflake className="text-blue-600 animate-spin" size={56} style={{animationDuration: '3s'}} />
