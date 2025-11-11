@@ -673,7 +673,7 @@ export default function NewYearGames() {
         <header className="text-center mb-12 bg-white bg-opacity-80 rounded-3xl p-8 shadow-2xl">
           <div className="flex items-center justify-center mb-6">
             <Snowflake className="text-blue-600 animate-spin" size={56} style={{animationDuration: '3s'}} />
-            <h1 className="text-6xl font-bold bg-gradient-to-r from-red-700 via-pink-600 to-purple-700 bg-clip-text text-transparent mx-6">
+            <h1 className="text-[60px] font-bold bg-gradient-to-r from-red-700 via-pink-600 to-purple-700 bg-clip-text text-transparent mx-6">
               Ամանորյա Խաղերի Հավաքածու
             </h1>
             <Sparkles className="text-yellow-600 animate-pulse" size={56} />
