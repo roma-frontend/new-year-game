@@ -459,12 +459,120 @@ export default function NewYearGames() {
   const [selectedGame, setSelectedGame] = useState<Game | null>(null);
   const [printMode, setPrintMode] = useState(false);
   const [expandedGame, setExpandedGame] = useState<number | null>(null);
+  const [printAllGames, setPrintAllGames] = useState(false);
 
   const handlePrint = (game: Game) => {
     setSelectedGame(game);
     setPrintMode(true);
     setTimeout(() => window.print(), 100);
   };
+
+  const handlePrintAll = () => {
+    setPrintAllGames(true);
+    setTimeout(() => window.print(), 100);
+  };
+
+  if (printAllGames) {
+    return (
+      <div className="print-page bg-white">
+        <style>{`
+          @media print {
+            body { margin: 0; padding: 10px; background: white; }
+            .no-print { display: none !important; }
+            .print-page { display: block !important; }
+            .game-summary-card { page-break-inside: avoid; }
+          }
+          @page { size: A4; margin: 10mm; }
+        `}</style>
+        
+        <div className="text-center mb-8 pb-4 border-b-4 border-red-600">
+          <div className="flex items-center justify-center mb-3">
+            <Snowflake className="text-blue-600" size={40} />
+            <h1 className="text-5xl font-bold text-red-700 mx-4">Ամանորյա Խաղերի Հավաքածու</h1>
+            <Sparkles className="text-yellow-600" size={40} />
+          </div>
+          <p className="text-xl text-gray-800 font-semibold">10 Շքեղ Դերային Խաղ</p>
+        </div>
+
+        <div className="grid grid-cols-2 gap-6">
+          {games.map((game) => (
+            <div
+              key={game.id}
+              className="game-summary-card border-4 border-red-500 rounded-2xl p-6 bg-gradient-to-br from-red-50 via-pink-50 to-purple-50"
+              style={{ minHeight: '320px' }}
+            >
+              <div className="flex items-center mb-4 pb-3 border-b-2 border-red-400">
+                <div className="bg-gradient-to-br from-red-600 to-pink-600 text-white rounded-full w-14 h-14 flex items-center justify-center text-2xl font-bold mr-4 shadow-lg">
+                  {game.id}
+                </div>
+                <h2 className="text-2xl font-bold text-red-800">{game.name}</h2>
+              </div>
+
+              <p className="text-sm text-gray-800 mb-3 leading-relaxed font-medium">{game.description}</p>
+
+              <div className="space-y-2 mb-3">
+                <div className="bg-blue-50 p-2 rounded-lg border border-blue-300">
+                  <p className="text-xs"><strong className="text-blue-700">⏱️</strong> {game.duration} | <strong className="text-blue-700">👥</strong> {game.players}</p>
+                </div>
+                
+                <div className="bg-amber-50 p-2 rounded-lg border border-amber-300">
+                  <p className="text-xs"><strong className="text-amber-700">🎯</strong> {game.materials}</p>
+                </div>
+
+                <div className="bg-green-50 p-2 rounded-lg border border-green-300">
+                  <p className="text-xs"><strong className="text-green-700">🍽️</strong> {game.food}</p>
+                </div>
+              </div>
+
+              <div className="bg-purple-50 p-3 rounded-lg border-2 border-purple-300">
+                <h3 className="font-bold text-purple-800 mb-2 text-sm flex items-center">
+                  <Users className="mr-1" size={16} />
+                  Դերեր ({game.roles.length}):
+                </h3>
+                <div className="grid grid-cols-2 gap-1">
+                  {game.roles.map((role, idx) => (
+                    <div
+                      key={idx}
+                      className="bg-white px-2 py-1 rounded text-xs font-semibold text-purple-900 border border-purple-200"
+                    >
+                      {role.name}
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="flex justify-center mt-3 space-x-2">
+                <Gift className="text-green-600" size={18} />
+                <Heart className="text-pink-600" size={18} />
+                <Wine className="text-purple-600" size={18} />
+                <Sparkles className="text-yellow-600" size={18} />
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="mt-8 text-center border-t-4 border-red-600 pt-6">
+          <div className="flex items-center justify-center space-x-4 text-2xl mb-3">
+            <Snowflake className="text-blue-600" />
+            <Heart className="text-red-600" />
+            <Wine className="text-purple-700" />
+            <Gift className="text-green-700" />
+            <Sparkles className="text-yellow-600" />
+          </div>
+          <p className="text-xl text-gray-800 font-bold">
+            Շնորհավոր Նոր Տարի և Սուրբ Ծնունդ! 🎄🎉
+          </p>
+        </div>
+
+        <button
+          onClick={() => setPrintAllGames(false)}
+          className="no-print fixed top-4 right-4 bg-gradient-to-r from-red-600 to-pink-600 text-white px-8 py-4 rounded-xl hover:from-red-700 hover:to-pink-700 shadow-2xl font-bold text-lg"
+        >
+          ✕ Փակել
+        </button>
+      </div>
+    );
+  }
 
   if (printMode && selectedGame) {
     return (
@@ -576,6 +684,14 @@ export default function NewYearGames() {
           <p className="text-lg text-gray-700 mt-3">
             🎭 Իմպրովիզացիա | 💋 Ֆլիրտ | 🍷 Զվարճություն | 🎉 Անմոռանալի Հուշեր
           </p>
+          
+          <button
+            onClick={handlePrintAll}
+            className="mt-6 bg-gradient-to-r from-green-600 to-emerald-600 text-white px-8 py-4 rounded-xl font-bold hover:from-green-700 hover:to-emerald-700 transition-all shadow-lg text-lg flex items-center justify-center mx-auto"
+          >
+            <Gift className="mr-3" size={24} />
+            🖨️ Տպել Բոլոր Խաղերի Քարտերը
+          </button>
         </header>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
