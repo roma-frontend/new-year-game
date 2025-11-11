@@ -576,7 +576,7 @@ export default function NewYearGames() {
 
   if (printMode && selectedGame) {
     return (
-      <div className="print-page bg-gradient-to-br from-red-50 via-amber-50 to-green-50">
+      <div className="print-page bg-gradient-to-br from-red-50 via-amber-50 to-green-50 p-8">
         <style>{`
           @media print {
             body { margin: 0; padding: 15px; background: white; }
@@ -589,7 +589,7 @@ export default function NewYearGames() {
           }
         `}</style>
         
-        <div className="text-center mb-8 pb-6 border-b-4 border-red-600">
+        <div className="text-center mb-8 py-6 border-b-4 border-red-600">
           <div className="flex items-center justify-center mb-4">
             <Snowflake className="text-blue-500" size={36} />
             <h1 className="text-5xl font-bold text-red-700 mx-4 tracking-wide">{selectedGame.name}</h1>
