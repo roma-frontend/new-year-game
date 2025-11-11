@@ -2,10 +2,19 @@
 
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { Snowflake, Gift, Star, Sparkles, PartyPopper, Heart, Wine, Users } from 'lucide-react';
+import { Snowflake, Gift, Star, Sparkles, PartyPopper, Heart, Wine, Users, LucideIcon } from 'lucide-react';
+
+interface Particle {
+  id: number;
+  left: number;
+  delay: number;
+  duration: number;
+  size: number;
+  icon: LucideIcon;
+}
 
 const NewYearLanding = () => {
-  const [particles, setParticles] = useState([]);
+  const [particles, setParticles] = useState<Particle[]>([]);
 
   useEffect(() => {
     // Generate random particles
