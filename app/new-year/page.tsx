@@ -488,7 +488,7 @@ export default function NewYearGames() {
         <div className="text-center mb-8 pb-4 border-b-4 border-red-600">
           <div className="flex items-center justify-center mb-3">
             <Snowflake className="text-blue-600" size={40} />
-            <h1 className="text-5xl font-bold text-red-700 mx-4">Ամանորյա Խաղերի Հավաքածու</h1>
+            <h1 className="text-[60px] font-bold text-red-700 mx-4">Ամանորյա Խաղերի Հավաքածու</h1>
             <Sparkles className="text-yellow-600" size={40} />
           </div>
           <p className="text-xl text-gray-800 font-semibold">10 Շքեղ Դերային Խաղ</p>
