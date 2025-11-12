@@ -2,7 +2,7 @@
 "use client"
 
 import React, { useState } from 'react';
-import { Sparkles, Snowflake, Gift, Heart, Wine, Users, ChevronDown, ChevronUp, Eye, EyeOff, X, UserPlus, Shuffle } from 'lucide-react';
+import { Sparkles, Snowflake, Gift, Heart, Wine, Users, ChevronDown, ChevronUp, Eye, EyeOff, X, UserPlus, Shuffle, Star, Timer, Play, Pause, RotateCcw, Music, Volume2, VolumeX, Trophy, Plus, Minus, Save, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { games, type Game, type Participant } from './games-data';
 
@@ -20,6 +20,42 @@ export default function NewYearGames() {
   const [revealMode, setRevealMode] = useState(false);
   const [currentRevealIndex, setCurrentRevealIndex] = useState(0);
   const [isRevealing, setIsRevealing] = useState(false);
+  const [favorites, setFavorites] = useState<number[]>([]);
+  const [showTimer, setShowTimer] = useState(false);
+  const [timerMinutes, setTimerMinutes] = useState(0);
+  const [timerSeconds, setTimerSeconds] = useState(0);
+  const [isTimerRunning, setIsTimerRunning] = useState(false);
+  const [selectedGameForTimer, setSelectedGameForTimer] = useState<Game | null>(null);
+  const [musicPlaying, setMusicPlaying] = useState(false);
+  const [currentTrack, setCurrentTrack] = useState(0);
+  const [savedParticipants, setSavedParticipants] = useState<string[]>([]);
+  const [showScoreboard, setShowScoreboard] = useState(false);
+  const [teamScores, setTeamScores] = useState<{[key: string]: number}>({});
+  const [showSavedList, setShowSavedList] = useState(false);
+  const [audioPlayer, setAudioPlayer] = useState<HTMLAudioElement | null>(null);
+
+  // Загрузка сохраненных участников из localStorage при монтировании
+  React.useEffect(() => {
+    const saved = localStorage.getItem('savedParticipants');
+    if (saved) {
+      setSavedParticipants(JSON.parse(saved));
+    }
+    const savedScores = localStorage.getItem('teamScores');
+    if (savedScores) {
+      setTeamScores(JSON.parse(savedScores));
+    }
+    
+    // Инициализация аудио плеера
+    const audio = new Audio();
+    audio.loop = true;
+    audio.volume = 0.3; // 30% громкости
+    setAudioPlayer(audio);
+    
+    return () => {
+      audio.pause();
+      audio.src = '';
+    };
+  }, []);
 
   const handlePrint = (game: Game) => {
     setSelectedGame(game);
@@ -91,6 +127,122 @@ export default function NewYearGames() {
     setIsRevealing(false);
     setParticipantInputs(['', '', '', '', '', '']);
     setAssignedParticipants([]);
+  };
+
+  const toggleFavorite = (gameId: number) => {
+    setFavorites(prev => 
+      prev.includes(gameId) 
+        ? prev.filter(id => id !== gameId)
+        : [...prev, gameId]
+    );
+  };
+
+  const startTimer = (game: Game) => {
+    const duration = parseInt(game.duration.match(/\d+/)?.[0] || '30');
+    setTimerMinutes(duration);
+    setTimerSeconds(0);
+    setSelectedGameForTimer(game);
+    setShowTimer(true);
+    setIsTimerRunning(true);
+  };
+
+  React.useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (isTimerRunning && (timerMinutes > 0 || timerSeconds > 0)) {
+      interval = setInterval(() => {
+        if (timerSeconds > 0) {
+          setTimerSeconds(timerSeconds - 1);
+        } else if (timerMinutes > 0) {
+          setTimerMinutes(timerMinutes - 1);
+          setTimerSeconds(59);
+        } else {
+          setIsTimerRunning(false);
+          alert('⏰ Время вышло! Игра завершена!');
+        }
+      }, 1000);
+    }
+    return () => clearInterval(interval);
+  }, [isTimerRunning, timerMinutes, timerSeconds]);
+
+  const newYearTracks = [
+    { name: 'Jingle Bells', url: '/music/jingle-bells.mp3' },
+    { name: 'Carol of the Bells', url: '/music/carol.mp3' },
+    { name: 'Winter Wonderland', url: '/music/winter.mp3' }
+  ];
+
+  const toggleMusic = () => {
+    if (!audioPlayer) return;
+    
+    if (musicPlaying) {
+      audioPlayer.pause();
+      setMusicPlaying(false);
+    } else {
+      audioPlayer.src = newYearTracks[currentTrack].url;
+      audioPlayer.play().catch(err => {
+        console.error('Ошибка воспроизведения:', err);
+        alert('Не удалось воспроизвести музыку. Проверьте, что файлы находятся в папке /public/music/');
+      });
+      setMusicPlaying(true);
+    }
+  };
+
+  const changeTrack = (index: number) => {
+    if (!audioPlayer) return;
+    
+    setCurrentTrack(index);
+    audioPlayer.src = newYearTracks[index].url;
+    
+    if (musicPlaying) {
+      audioPlayer.play().catch(err => {
+        console.error('Ошибка воспроизведения:', err);
+      });
+    }
+  };
+
+  const saveParticipantsList = () => {
+    const names = participantInputs.filter(name => name.trim().length > 0);
+    if (names.length > 0) {
+      const uniqueNames = Array.from(new Set([...savedParticipants, ...names]));
+      setSavedParticipants(uniqueNames);
+      localStorage.setItem('savedParticipants', JSON.stringify(uniqueNames));
+      alert('✅ Список участников сохранен!');
+    }
+  };
+
+  const loadSavedParticipants = () => {
+    if (savedParticipants.length > 0) {
+      const newInputs = [...savedParticipants];
+      while (newInputs.length < 6) newInputs.push('');
+      setParticipantInputs(newInputs);
+      setShowSavedList(false);
+    }
+  };
+
+  const clearSavedParticipants = () => {
+    if (confirm('Удалить все сохраненные имена?')) {
+      setSavedParticipants([]);
+      localStorage.removeItem('savedParticipants');
+    }
+  };
+
+  const updateTeamScore = (teamName: string, delta: number) => {
+    const newScores = {
+      ...teamScores,
+      [teamName]: (teamScores[teamName] || 0) + delta
+    };
+    setTeamScores(newScores);
+    localStorage.setItem('teamScores', JSON.stringify(newScores));
+  };
+
+  const resetScores = () => {
+    if (confirm('Վերակայե՞լ բոլոր կետերը')) {
+      setTeamScores({});
+      localStorage.removeItem('teamScores');
+    }
+  };
+
+  const getTeamsList = () => {
+    return Array.from(new Set(assignedParticipants.map(p => p.name)));
   };
 
   if (printAllGames) {
@@ -405,9 +557,48 @@ export default function NewYearGames() {
           </div>
 
           <div className="mb-6">
-            <label className="block text-lg font-bold text-slate-700 mb-4">
-              Մուտքագրեք մասնակիցների անունները:
-            </label>
+            <div className="flex items-center justify-between mb-4">
+              <label className="block text-lg font-bold text-slate-700">
+                Մուտքագրեք մասնակիցների անունները:
+              </label>
+              {savedParticipants.length > 0 && (
+                <button
+                  onClick={() => setShowSavedList(!showSavedList)}
+                  className="text-sm text-indigo-600 hover:text-indigo-700 font-medium flex items-center"
+                >
+                  <Users size={16} className="mr-1" />
+                  Загрузить сохраненных ({savedParticipants.length})
+                </button>
+              )}
+            </div>
+
+            {showSavedList && savedParticipants.length > 0 && (
+              <div className="mb-4 bg-indigo-50 rounded-xl p-4 border border-indigo-200">
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-sm font-bold text-indigo-800">Сохраненные участники:</span>
+                  <button
+                    onClick={clearSavedParticipants}
+                    className="text-xs text-rose-600 hover:text-rose-700 flex items-center"
+                  >
+                    <Trash2 size={14} className="mr-1" />
+                    Очистить
+                  </button>
+                </div>
+                <div className="flex flex-wrap gap-2 mb-3">
+                  {savedParticipants.map((name, idx) => (
+                    <span key={idx} className="bg-white px-3 py-1 rounded-full text-sm text-slate-700 border border-indigo-200">
+                      {name}
+                    </span>
+                  ))}
+                </div>
+                <button
+                  onClick={loadSavedParticipants}
+                  className="w-full bg-indigo-500 text-white py-2 rounded-lg font-bold hover:bg-indigo-600 transition-all"
+                >
+                  Загрузить этих участников
+                </button>
+              </div>
+            )}
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {participantInputs.map((value, index) => (
@@ -426,13 +617,22 @@ export default function NewYearGames() {
               ))}
             </div>
 
-            <button
-              onClick={addMoreInputs}
-              className="mt-4 w-full bg-gradient-to-r from-sky-400 to-blue-500 text-white py-3 rounded-xl font-bold hover:from-sky-500 hover:to-blue-600 transition-all flex items-center justify-center"
-            >
-              <UserPlus size={20} className="mr-2" />
-              Ավելացնել ևս 2 մասնակից
-            </button>
+            <div className="flex gap-2 mt-4">
+              <button
+                onClick={addMoreInputs}
+                className="flex-1 bg-gradient-to-r from-sky-400 to-blue-500 text-white py-3 rounded-xl font-bold hover:from-sky-500 hover:to-blue-600 transition-all flex items-center justify-center"
+              >
+                <UserPlus size={20} className="mr-2" />
+                Ավելացնել ևս 2 մասնակից
+              </button>
+              <button
+                onClick={saveParticipantsList}
+                className="flex-1 bg-gradient-to-r from-emerald-400 to-green-500 text-white py-3 rounded-xl font-bold hover:from-emerald-500 hover:to-green-600 transition-all flex items-center justify-center"
+              >
+                <Save size={20} className="mr-2" />
+                Сохранить список
+              </button>
+            </div>
           </div>
 
           <div className="flex justify-center space-x-4">
@@ -459,6 +659,182 @@ export default function NewYearGames() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 p-8">
       <div className="relative max-w-7xl mx-auto">
+
+        {/* Таймер */}
+        {showTimer && selectedGameForTimer && (
+          <div className="fixed top-20 right-8 bg-white rounded-2xl shadow-2xl p-6 border-2 border-indigo-300 z-40 min-w-[280px]">
+            <div className="text-center">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-bold text-slate-800">{selectedGameForTimer.name}</h3>
+                <button
+                  onClick={() => setShowTimer(false)}
+                  className="text-slate-400 hover:text-slate-600"
+                >
+                  <X size={20} />
+                </button>
+              </div>
+              
+              <div className="bg-gradient-to-br from-indigo-100 to-blue-100 rounded-xl p-6 mb-4">
+                <div className="text-6xl font-bold text-indigo-700 mb-2">
+                  {String(timerMinutes).padStart(2, '0')}:{String(timerSeconds).padStart(2, '0')}
+                </div>
+                <div className="text-sm text-indigo-600">
+                  {isTimerRunning ? 'Игра идет...' : 'Пауза'}
+                </div>
+              </div>
+
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setIsTimerRunning(!isTimerRunning)}
+                  className="flex-1 bg-gradient-to-r from-emerald-500 to-green-600 text-white py-2 rounded-lg font-bold hover:from-emerald-600 hover:to-green-700 transition-all flex items-center justify-center"
+                >
+                  {isTimerRunning ? <Pause size={20} className="mr-1" /> : <Play size={20} className="mr-1" />}
+                  {isTimerRunning ? 'Пауза' : 'Старт'}
+                </button>
+                <button
+                  onClick={() => startTimer(selectedGameForTimer)}
+                  className="flex-1 bg-gradient-to-r from-orange-500 to-amber-600 text-white py-2 rounded-lg font-bold hover:from-orange-600 hover:to-amber-700 transition-all flex items-center justify-center"
+                >
+                  <RotateCcw size={20} className="mr-1" />
+                  Сброс
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Музыкальный плеер */}
+        <div className="fixed bottom-8 right-8 bg-white rounded-2xl shadow-2xl p-4 border-2 border-purple-300 z-40 min-w-[300px]">
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center">
+              <Music className="text-purple-600 mr-2" size={24} />
+              <span className="font-bold text-slate-800">Նոր տարվա երաժշտություն</span>
+            </div>
+            <button
+              onClick={toggleMusic}
+              className={`p-2 rounded-lg transition-all ${
+                musicPlaying 
+                  ? 'bg-purple-500 text-white hover:bg-purple-600' 
+                  : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+              }`}
+            >
+              {musicPlaying ? <Volume2 size={20} /> : <VolumeX size={20} />}
+            </button>
+          </div>
+          
+          {musicPlaying && (
+            <div className="bg-purple-50 rounded-lg p-3 border border-purple-200">
+              <div className="text-sm text-purple-700 font-medium mb-2">
+                🎵 {newYearTracks[currentTrack].name}
+              </div>
+              <div className="flex gap-2 mb-2">
+                {newYearTracks.map((track, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => changeTrack(idx)}
+                    className={`flex-1 py-1 rounded text-xs font-bold transition-all ${
+                      currentTrack === idx
+                        ? 'bg-purple-500 text-white'
+                        : 'bg-white text-purple-600 hover:bg-purple-100'
+                    }`}
+                  >
+                    {idx + 1}
+                  </button>
+                ))}
+              </div>
+              <div className="text-xs text-purple-600 text-center">
+                🔊 Ձայն 30%
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Таблица очков */}
+        {showScoreboard && (
+          <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-2xl shadow-2xl p-6 border-2 border-amber-300 z-50 min-w-[400px] max-h-[80vh] overflow-y-auto">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center">
+                <Trophy className="text-amber-500 mr-2" size={28} />
+                <h3 className="text-2xl font-bold text-slate-800">Միավորների աղյուսակ</h3>
+              </div>
+              <button
+                onClick={() => setShowScoreboard(false)}
+                className="text-slate-400 hover:text-slate-600"
+              >
+                <X size={24} />
+              </button>
+            </div>
+
+            <div className="space-y-3 mb-4">
+              {getTeamsList().map((teamName) => (
+                <div key={teamName} className="bg-gradient-to-r from-amber-50 to-yellow-50 rounded-xl p-4 border border-amber-200">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="font-bold text-slate-800">{teamName}</span>
+                    <span className="text-3xl font-bold text-amber-600">
+                      {teamScores[teamName] || 0}
+                    </span>
+                  </div>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => updateTeamScore(teamName, 1)}
+                      className="flex-1 bg-emerald-500 text-white py-2 rounded-lg font-bold hover:bg-emerald-600 transition-all flex items-center justify-center"
+                    >
+                      <Plus size={18} className="mr-1" />
+                      +1
+                    </button>
+                    <button
+                      onClick={() => updateTeamScore(teamName, 5)}
+                      className="flex-1 bg-green-500 text-white py-2 rounded-lg font-bold hover:bg-green-600 transition-all flex items-center justify-center"
+                    >
+                      <Plus size={18} className="mr-1" />
+                      +5
+                    </button>
+                    <button
+                      onClick={() => updateTeamScore(teamName, -1)}
+                      className="flex-1 bg-rose-500 text-white py-2 rounded-lg font-bold hover:bg-rose-600 transition-all flex items-center justify-center"
+                    >
+                      <Minus size={18} className="mr-1" />
+                      -1
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {getTeamsList().length === 0 && (
+              <div className="text-center text-slate-500 py-8">
+                <Trophy size={48} className="mx-auto mb-3 text-slate-300" />
+                <p>Сначала распределите роли,<br/>чтобы начать вести счет</p>
+              </div>
+            )}
+
+            <button
+              onClick={resetScores}
+              className="w-full bg-gradient-to-r from-rose-500 to-red-600 text-white py-3 rounded-xl font-bold hover:from-rose-600 hover:to-red-700 transition-all flex items-center justify-center"
+            >
+              <Trash2 size={20} className="mr-2" />
+              Վերագործարկեք բոլոր կետերը
+            </button>
+          </div>
+        )}
+
+        {/* Фильтр избранного */}
+        {favorites.length > 0 && (
+          <div className="mb-6 bg-amber-50 border-2 border-amber-300 rounded-xl p-4 flex items-center justify-between">
+            <div className="flex items-center">
+              <Star className="text-amber-500 fill-amber-500 mr-2" size={24} />
+              <span className="text-slate-700 font-semibold">
+              Առաջարկվող խաղեր: {favorites.length}
+              </span>
+            </div>
+            <button
+              onClick={() => setFavorites([])}
+              className="text-sm text-amber-600 hover:text-amber-700 font-medium underline"
+            >
+              Մաքրել նախընտրածները
+            </button>
+          </div>
+        )}
 
         <div className="fixed left-[2rem] top-[2rem]">
           <button
@@ -502,19 +878,43 @@ export default function NewYearGames() {
             <Gift className="mr-3" size={24} />
             🖨️ Տպել Բոլոր Խաղերի Քարտերը
           </button>
+
+          <button
+            onClick={() => setShowScoreboard(true)}
+            className="mt-4 bg-gradient-to-r from-amber-500 to-yellow-600 text-white px-8 py-4 rounded-xl font-bold hover:from-amber-600 hover:to-yellow-700 transition-all shadow-lg text-lg flex items-center justify-center mx-auto"
+          >
+            <Trophy className="mr-3" size={24} />
+            🏆 Таблица очков
+          </button>
         </header>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {games.map((game) => (
+          {games
+            .filter(game => favorites.length === 0 || favorites.includes(game.id))
+            .map((game) => (
             <div
               key={game.id}
-              className="bg-white rounded-2xl shadow-lg p-8 border border-slate-200 hover:border-indigo-300 transition-all hover:scale-[1.02] hover:shadow-xl"
+              className="bg-white rounded-2xl shadow-lg p-8 border border-slate-200 hover:border-indigo-300 transition-all hover:scale-[1.02] hover:shadow-xl relative"
             >
+              {/* Кнопка избранного */}
+              <button
+                onClick={() => toggleFavorite(game.id)}
+                className="absolute top-4 right-4 transition-all hover:scale-110"
+              >
+                <Star 
+                  size={28} 
+                  className={favorites.includes(game.id) 
+                    ? 'text-amber-500 fill-amber-500' 
+                    : 'text-slate-300 hover:text-amber-400'
+                  }
+                />
+              </button>
+
               <div className="flex items-center mb-6">
                 <div className="bg-gradient-to-br from-sky-500 to-blue-600 text-white rounded-full w-16 h-16 flex items-center justify-center text-2xl font-bold mr-5 shadow-md">
                   {game.id}
                 </div>
-                <h2 className="text-3xl font-bold text-slate-800">{game.name}</h2>
+                <h2 className="text-3xl font-bold text-slate-800 pr-10">{game.name}</h2>
               </div>
 
               <p className="text-slate-700 mb-4 text-lg leading-relaxed">{game.description}</p>
@@ -574,6 +974,14 @@ export default function NewYearGames() {
               </div>
 
               <div className="space-y-3">
+                <button
+                  onClick={() => startTimer(game)}
+                  className="w-full bg-gradient-to-r from-emerald-500 to-green-600 text-white py-4 rounded-xl font-bold hover:from-emerald-600 hover:to-green-700 transition-all flex items-center justify-center shadow-md text-lg"
+                >
+                  <Timer className="mr-3" size={24} />
+                  ⏱️ Գործարկել ժամանակաչափը
+                </button>
+
                 <button
                   onClick={() => openParticipantsModal(game)}
                   className="w-full bg-gradient-to-r from-indigo-600 to-blue-600 text-white py-4 rounded-xl font-bold hover:from-indigo-700 hover:to-blue-700 transition-all flex items-center justify-center shadow-md text-lg"
