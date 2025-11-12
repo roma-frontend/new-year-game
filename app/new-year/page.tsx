@@ -679,7 +679,7 @@ export default function NewYearGames() {
                   {String(timerMinutes).padStart(2, '0')}:{String(timerSeconds).padStart(2, '0')}
                 </div>
                 <div className="text-sm text-indigo-600">
-                  {isTimerRunning ? 'Игра идет...' : 'Пауза'}
+                  {isTimerRunning ? 'Խաղը մեկնարկել է...' : 'Դադար'}
                 </div>
               </div>
 
@@ -689,14 +689,14 @@ export default function NewYearGames() {
                   className="flex-1 bg-gradient-to-r from-emerald-500 to-green-600 text-white py-2 rounded-lg font-bold hover:from-emerald-600 hover:to-green-700 transition-all flex items-center justify-center"
                 >
                   {isTimerRunning ? <Pause size={20} className="mr-1" /> : <Play size={20} className="mr-1" />}
-                  {isTimerRunning ? 'Пауза' : 'Старт'}
+                  {isTimerRunning ? 'Դադար' : 'Սկսել'}
                 </button>
                 <button
                   onClick={() => startTimer(selectedGameForTimer)}
                   className="flex-1 bg-gradient-to-r from-orange-500 to-amber-600 text-white py-2 rounded-lg font-bold hover:from-orange-600 hover:to-amber-700 transition-all flex items-center justify-center"
                 >
                   <RotateCcw size={20} className="mr-1" />
-                  Сброс
+                  Վերագործարկում
                 </button>
               </div>
             </div>
