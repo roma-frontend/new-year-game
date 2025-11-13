@@ -61,12 +61,16 @@ const GuessTheMelody = () => {
   const avatarColors = ['🔴', '🟠', '🟡', '🟢', '🔵', '🟣', '🟤', '⚫', '⚪', '🔷', '🔶', '⭐', '💎', '🎯', '🎨', '🎭'];
 
   const songs: Song[] = [
-    { id: 1, file: '/music/song1.mp3', title: 'Երգ 1', artist: 'Կատարող 1', difficulty: 'easy', year: '2020' },
-    { id: 2, file: '/music/song2.mp3', title: 'Երգ 2', artist: 'Կատարող 2', difficulty: 'medium', year: '2019' },
-    { id: 3, file: '/music/song3.mp3', title: 'Երգ 3', artist: 'Կատարող 3', difficulty: 'hard', year: '2021' },
-    { id: 4, file: '/music/song4.mp3', title: 'Երգ 4', artist: 'Կատարող 4', difficulty: 'medium', year: '2022' },
-    { id: 5, file: '/music/song5.mp3', title: 'Երգ 5', artist: 'Կատարող 5', difficulty: 'easy', year: '2023' },
-    { id: 6, file: '/music/song6.mp3', title: 'Երգ 6', artist: 'Կատարող 6', difficulty: 'hard', year: '2024' },
+    { id: 1, file: '/song1.mp3', title: 'My Kind of Present', artist: 'Meghan Trainor', difficulty: 'easy', year: '2022' },
+    { id: 2, file: '/song2.mp3', title: 'Snowman', artist: 'Sia', difficulty: 'medium', year: '2021' },
+    { id: 3, file: '/song3.mp3', title: 'White Christmas', artist: 'Bing Crosby', difficulty: 'easy', year: '1942' },
+    { id: 4, file: '/song4.mp3', title: 'Underneath the Tree', artist: 'Kelly Clarkson', difficulty: 'medium', year: '2020' },
+    { id: 5, file: '/song5.mp3', title: "It's Beginning to Look a Lot Like Christmas", artist: 'Michael Bublé', difficulty: 'easy', year: '2011' },
+    { id: 6, file: '/song6.mp3', title: 'Jingle Bells (Swing Version)', artist: 'Various Artists', difficulty: 'medium', year: '1857' },
+    { id: 7, file: '/song7.mp3', title: 'Merry Christmas', artist: 'Ed Sheeran & Elton John', difficulty: 'hard', year: '2021' },
+    { id: 8, file: '/song8.mp3', title: 'Blue Christmas', artist: 'Elvis Presley', difficulty: 'easy', year: '1957' },
+    { id: 9, file: '/song9.mp3', title: 'Christmas Tree Farm', artist: 'Taylor Swift', difficulty: 'medium', year: '2019' },
+    { id: 10, file: '/song10.mp3', title: 'Cindy Lou Who', artist: 'Sabrina Carpenter', difficulty: 'hard', year: '2023' },
   ];
 
   const wishes = [
@@ -92,6 +96,16 @@ const GuessTheMelody = () => {
 
   useEffect(() => {
     setIsMounted(true);
+    // Initialize audio element
+    audioRef.current = new Audio();
+    audioRef.current.volume = volume;
+    
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current = null;
+      }
+    };
   }, []);
 
   useEffect(() => {
@@ -157,12 +171,19 @@ const GuessTheMelody = () => {
       setIsPlaying(true);
       setSongRevealed(false);
       startTimeRef.current = Date.now();
+      
       if (audioRef.current) {
         audioRef.current.src = songs[currentSongIndex].file;
-        audioRef.current.play().catch(e => {
-          console.log('Audio play failed:', e);
-          alert('Не удалось загрузить аудио файл. Убедитесь, что файлы находятся в папке /public/music/');
-        });
+        audioRef.current.volume = volume;
+        
+        const playPromise = audioRef.current.play();
+        
+        if (playPromise !== undefined) {
+          playPromise.catch(e => {
+            console.log('Audio play failed:', e);
+            alert('Не удалось загрузить аудио файл. Убедитесь, что файлы song1.mp3 - song10.mp3 находятся в папке /public/');
+          });
+        }
       }
     }
   };
@@ -302,6 +323,15 @@ const GuessTheMelody = () => {
     setRoundWinner(null);
     setSongRevealed(false);
     setGameStats({ totalTime: 0, songsPlayed: 0, avgResponseTime: 0 });
+  };
+
+  const getHintText = (level: number, song: Song) => {
+    if (level === 1) {
+      return `💡 Подсказка 1: Год ${song.year}`;
+    } else if (level === 2) {
+      return `💡 Подсказка 2: Исполнитель ${song.artist.substring(0, 3)}...`;
+    }
+    return '';
   };
 
   const Confetti = () => {
@@ -479,7 +509,6 @@ const GuessTheMelody = () => {
 
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-900 via-indigo-900 to-purple-900 p-6 relative overflow-hidden">
-        <audio ref={audioRef} />
         <Confetti />
         
         <div className="absolute inset-0 opacity-10">
@@ -606,12 +635,12 @@ const GuessTheMelody = () => {
                 <div className="text-center space-y-3">
                   {hintLevel >= 1 && (
                     <div className="bg-blue-500/30 px-6 py-3 rounded-full inline-block animate-fade-in border-2 border-blue-400">
-                      <span className="text-xl font-bold text-white">💡 Հուշում 1: Տարի {currentSong.year}</span>
+                      <span className="text-xl font-bold text-white">{getHintText(1, currentSong)}</span>
                     </div>
                   )}
                   {hintLevel >= 2 && (
                     <div className="bg-purple-500/30 px-6 py-3 rounded-full inline-block animate-fade-in border-2 border-purple-400 ml-3">
-                      <span className="text-xl font-bold text-white">💡 Հուշում 2: {currentSong.artist.substring(0, 3)}...</span>
+                      <span className="text-xl font-bold text-white">{getHintText(2, currentSong)}</span>
                     </div>
                   )}
                 </div>
