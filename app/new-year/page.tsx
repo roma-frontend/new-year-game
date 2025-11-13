@@ -282,9 +282,9 @@ export default function NewYearGames() {
 
   const allAchievements = [
     { id: 'first_game', name: 'Սկսնակ', description: 'Խաղացել է առաջին խաղը', icon: '🎮', color: 'bg-blue-100 border-blue-300 text-blue-700' },
-    { id: 'party_king', name: 'Երեկոյի թագավոր', description: 'Հաղթել է 5-ից ավել խաղեր', icon: '👑', color: 'bg-yellow-100 border-yellow-300 text-yellow-700' },
+    { id: 'party_king', name: 'Երեկոյի թագավոր', description: 'Հաղթել է 5-ից ավելի խաղեր', icon: '👑', color: 'bg-yellow-100 border-yellow-300 text-yellow-700' },
     { id: 'team_player', name: 'Թիմային խաղացող', description: 'Օգնել է թիմին հաղթել', icon: '🤝', color: 'bg-green-100 border-green-300 text-green-700' },
-    { id: 'speedster', name: 'Արագ վազող', description: 'Խաղն ավարտվել է ռեկորդային ժամանակում', icon: '⚡', color: 'bg-purple-100 border-purple-300 text-purple-700' },
+    { id: 'speedster', name: 'Արագ վազող', description: 'Խաղն ավարտել է ռեկորդային ժամանակում', icon: '⚡', color: 'bg-purple-100 border-purple-300 text-purple-700' },
     { id: 'entertainer', name: 'Երեկոյի հոգին', description: 'Մասնակցել է բոլոր խաղերին', icon: '🎭', color: 'bg-pink-100 border-pink-300 text-pink-700' },
     { id: 'strategist', name: 'Ստրատեգ', description: 'Հավաքել է 100+ միավոր', icon: '🧠', color: 'bg-indigo-100 border-indigo-300 text-indigo-700' },
     { id: 'collector', name: 'Հավաքորդ', description: 'Վաստակել է 10+ նվաճում', icon: '⭐', color: 'bg-amber-100 border-amber-300 text-amber-700' },
@@ -869,7 +869,7 @@ export default function NewYearGames() {
                 </div>
                 <h2 className="text-3xl font-bold text-slate-800 mb-2">🏅 Ձեր նվաճումները</h2>
                 <p className="text-lg text-slate-600">
-                  Ապակլոպվել է {achievements.length} / {allAchievements.length}
+                  Ապաբլոկավորվել է {achievements.length} / {allAchievements.length}
                 </p>
               </div>
 
@@ -891,7 +891,7 @@ export default function NewYearGames() {
                       {isUnlocked && (
                         <div className="text-center mt-3">
                           <span className="inline-block bg-white bg-opacity-70 px-3 py-1 rounded-full text-xs font-bold">
-                            ✓ Ապակլոպված
+                            ✓ Ապաբլոկավորված
                           </span>
                         </div>
                       )}
@@ -921,7 +921,7 @@ export default function NewYearGames() {
                   <>
                     <div className="text-center">
                       <div className="text-6xl mb-2">{achievement.icon}</div>
-                      <div className="text-white font-bold text-2xl mb-1">🎉 Նվաճումը ապակլոպված է!</div>
+                      <div className="text-white font-bold text-2xl mb-1">🎉 Նվաճումը Ապաբլոկավորված է!</div>
                       <div className="text-yellow-900 font-bold text-xl">{achievement.name}</div>
                       <div className="text-yellow-800 text-sm">{achievement.description}</div>
                     </div>
