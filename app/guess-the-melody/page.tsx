@@ -496,7 +496,7 @@ const GuessTheMelody = () => {
               disabled={players.length < 2}
               className="w-full bg-gradient-to-r from-yellow-500 via-orange-500 to-red-500 hover:from-yellow-600 hover:via-orange-600 hover:to-red-600 text-white py-8 text-2xl font-black rounded-xl shadow-2xl transform hover:scale-105 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <Play className="mr-3 w-8 h-8" /> ՍԿՍԵԼ ԽԱՂԸ 🚀
+              <Play className="mr-3 w-8 h-8" /> Սկսել Խաղը 🚀
             </Button>
           </Card>
         </div>
@@ -561,7 +561,7 @@ const GuessTheMelody = () => {
               {powerUpActive && (
                 <div className="bg-gradient-to-r from-yellow-500 to-orange-500 px-6 py-4 rounded-full border-4 border-yellow-300 animate-pulse">
                   <span className="text-xl font-black text-white flex items-center gap-2">
-                    <Zap className="animate-bounce" /> x2 ԱԿՏԻՎ
+                    <Zap className="animate-bounce" /> x2 Ակտիվ
                   </span>
                 </div>
               )}
