@@ -61,16 +61,16 @@ const GuessTheMelody = () => {
   const avatarColors = ['🔴', '🟠', '🟡', '🟢', '🔵', '🟣', '🟤', '⚫', '⚪', '🔷', '🔶', '⭐', '💎', '🎯', '🎨', '🎭'];
 
   const songs: Song[] = [
-    { id: 1, file: '/song1.mp3', title: 'My Kind of Present', artist: 'Meghan Trainor', difficulty: 'easy', year: '2022' },
-    { id: 2, file: '/song2.mp3', title: 'Snowman', artist: 'Sia', difficulty: 'medium', year: '2021' },
-    { id: 3, file: '/song3.mp3', title: 'White Christmas', artist: 'Bing Crosby', difficulty: 'easy', year: '1942' },
-    { id: 4, file: '/song4.mp3', title: 'Underneath the Tree', artist: 'Kelly Clarkson', difficulty: 'medium', year: '2020' },
-    { id: 5, file: '/song5.mp3', title: "It's Beginning to Look a Lot Like Christmas", artist: 'Michael Bublé', difficulty: 'easy', year: '2011' },
-    { id: 6, file: '/song6.mp3', title: 'Jingle Bells (Swing Version)', artist: 'Various Artists', difficulty: 'medium', year: '1857' },
-    { id: 7, file: '/song7.mp3', title: 'Merry Christmas', artist: 'Ed Sheeran & Elton John', difficulty: 'hard', year: '2021' },
-    { id: 8, file: '/song8.mp3', title: 'Blue Christmas', artist: 'Elvis Presley', difficulty: 'easy', year: '1957' },
-    { id: 9, file: '/song9.mp3', title: 'Christmas Tree Farm', artist: 'Taylor Swift', difficulty: 'medium', year: '2019' },
-    { id: 10, file: '/song10.mp3', title: 'Cindy Lou Who', artist: 'Sabrina Carpenter', difficulty: 'hard', year: '2023' },
+    { id: 1, file: '/music/song1.mp3', title: 'My Kind of Present', artist: 'Meghan Trainor', difficulty: 'easy', year: '2022' },
+    { id: 2, file: '/music/song2.mp3', title: 'Snowman', artist: 'Sia', difficulty: 'medium', year: '2021' },
+    { id: 3, file: '/music/song3.mp3', title: 'White Christmas', artist: 'Bing Crosby', difficulty: 'easy', year: '1942' },
+    { id: 4, file: '/music/song4.mp3', title: 'Underneath the Tree', artist: 'Kelly Clarkson', difficulty: 'medium', year: '2020' },
+    { id: 5, file: '/music/song5.mp3', title: "It's Beginning to Look a Lot Like Christmas", artist: 'Michael Bublé', difficulty: 'easy', year: '2011' },
+    { id: 6, file: '/music/song6.mp3', title: 'Jingle Bells (Swing Version)', artist: 'Various Artists', difficulty: 'medium', year: '1857' },
+    { id: 7, file: '/music/song7.mp3', title: 'Merry Christmas', artist: 'Ed Sheeran & Elton John', difficulty: 'hard', year: '2021' },
+    { id: 8, file: '/music/song8.mp3', title: 'Blue Christmas', artist: 'Elvis Presley', difficulty: 'easy', year: '1957' },
+    { id: 9, file: '/music/song9.mp3', title: 'Christmas Tree Farm', artist: 'Taylor Swift', difficulty: 'medium', year: '2019' },
+    { id: 10, file: '/music/song10.mp3', title: 'Cindy Lou Who', artist: 'Sabrina Carpenter', difficulty: 'hard', year: '2023' },
   ];
 
   const wishes = [
