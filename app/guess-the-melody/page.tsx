@@ -51,6 +51,8 @@ const GuessTheMelody = () => {
   const [lastGuessTime, setLastGuessTime] = useState<number>(0);
   const [powerUpActive, setPowerUpActive] = useState(false);
   const [showStats, setShowStats] = useState(false);
+  const [songRevealed, setSongRevealed] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
   
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
@@ -87,6 +89,10 @@ const GuessTheMelody = () => {
     medium: { base: 5, fast: 8, perfect: 12 },
     hard: { base: 8, fast: 12, perfect: 15 }
   };
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   useEffect(() => {
     if (gameState === 'playing' && isPlaying && timeLeft > 0) {
@@ -149,10 +155,14 @@ const GuessTheMelody = () => {
     if (players.length >= 2) {
       setGameState('playing');
       setIsPlaying(true);
+      setSongRevealed(false);
       startTimeRef.current = Date.now();
       if (audioRef.current) {
         audioRef.current.src = songs[currentSongIndex].file;
-        audioRef.current.play().catch(e => console.log('Audio play failed:', e));
+        audioRef.current.play().catch(e => {
+          console.log('Audio play failed:', e);
+          alert('Не удалось загрузить аудио файл. Убедитесь, что файлы находятся в папке /public/music/');
+        });
       }
     }
   };
@@ -179,6 +189,8 @@ const GuessTheMelody = () => {
     const currentSong = songs[currentSongIndex];
     const basePoints = difficultyPoints[currentSong.difficulty][difficulty];
     const responseTime = 45 - timeLeft;
+    
+    setSongRevealed(true);
     
     setPlayers(players.map(p => {
       if (p.id === playerId) {
@@ -211,6 +223,7 @@ const GuessTheMelody = () => {
   };
 
   const handleRoundEnd = () => {
+    setSongRevealed(true);
     setGameState('round-end');
     if (audioRef.current) audioRef.current.pause();
     setIsPlaying(false);
@@ -222,6 +235,7 @@ const GuessTheMelody = () => {
     setShowHint(false);
     setHintLevel(0);
     setPowerUpActive(false);
+    setSongRevealed(false);
     
     if (currentSongIndex < songs.length - 1) {
       setCurrentSongIndex(currentSongIndex + 1);
@@ -286,31 +300,32 @@ const GuessTheMelody = () => {
     setShowHint(false);
     setHintLevel(0);
     setRoundWinner(null);
+    setSongRevealed(false);
     setGameStats({ totalTime: 0, songsPlayed: 0, avgResponseTime: 0 });
   };
 
   const Confetti = () => {
-    if (!showConfetti) return null;
+    if (!showConfetti || !isMounted) return null;
     return (
       <div className="fixed inset-0 pointer-events-none z-50 overflow-hidden">
         {[...Array(100)].map((_, i) => {
           const icons = [Sparkles, Star, Trophy, Crown, Heart, Gift, PartyPopper, Zap];
-          const Icon = icons[Math.floor(Math.random() * icons.length)];
+          const Icon = icons[i % icons.length];
           const colors = ['text-yellow-400', 'text-pink-400', 'text-purple-400', 'text-blue-400', 'text-red-400', 'text-green-400'];
-          const color = colors[Math.floor(Math.random() * colors.length)];
+          const color = colors[i % colors.length];
           
           return (
             <div
               key={i}
               className="absolute animate-fall"
               style={{
-                left: `${Math.random() * 100}%`,
-                top: `-${Math.random() * 20}%`,
-                animationDelay: `${Math.random() * 3}s`,
-                animationDuration: `${3 + Math.random() * 4}s`,
+                left: `${(i * 13) % 100}%`,
+                top: `-${(i * 7) % 20}%`,
+                animationDelay: `${(i * 0.03) % 3}s`,
+                animationDuration: `${3 + (i % 4)}s`,
               }}
             >
-              <Icon className={color} size={15 + Math.random() * 25} />
+              <Icon className={color} size={15 + (i % 3) * 10} />
             </div>
           );
         })}
@@ -318,21 +333,24 @@ const GuessTheMelody = () => {
     );
   };
 
-  const Fireworks = () => (
-    <div className="fixed inset-0 pointer-events-none z-40">
-      {[...Array(20)].map((_, i) => (
-        <div
-          key={i}
-          className="absolute w-2 h-2 bg-gradient-to-r from-yellow-400 to-red-500 rounded-full animate-ping"
-          style={{
-            left: `${Math.random() * 100}%`,
-            top: `${Math.random() * 100}%`,
-            animationDelay: `${Math.random() * 2}s`,
-          }}
-        />
-      ))}
-    </div>
-  );
+  const Fireworks = () => {
+    if (!isMounted) return null;
+    return (
+      <div className="fixed inset-0 pointer-events-none z-40">
+        {[...Array(20)].map((_, i) => (
+          <div
+            key={i}
+            className="absolute w-2 h-2 bg-gradient-to-r from-yellow-400 to-red-500 rounded-full animate-ping"
+            style={{
+              left: `${(i * 17) % 100}%`,
+              top: `${(i * 23) % 100}%`,
+              animationDelay: `${(i * 0.1) % 2}s`,
+            }}
+          />
+        ))}
+      </div>
+    );
+  };
 
   if (gameState === 'intro') {
     return (
@@ -526,9 +544,15 @@ const GuessTheMelody = () => {
               <div className="text-center mb-4">
                 <div className="inline-flex items-center gap-3 bg-black/30 px-8 py-3 rounded-full mb-6">
                   <Music className="w-8 h-8 text-yellow-300 animate-bounce" />
-                  <span className="text-3xl font-black text-white">
-                    {currentSong.title} - {currentSong.artist}
-                  </span>
+                  {songRevealed ? (
+                    <span className="text-3xl font-black text-white">
+                      {currentSong.title} - {currentSong.artist}
+                    </span>
+                  ) : (
+                    <span className="text-3xl font-black text-white">
+                      🎵 ԳՈՒՇԱԿԵՔ ԵՐԳԸ 🎵
+                    </span>
+                  )}
                   <div className={`px-4 py-1 rounded-full text-sm font-bold ${
                     currentSong.difficulty === 'easy' ? 'bg-green-500' :
                     currentSong.difficulty === 'medium' ? 'bg-yellow-500' : 'bg-red-500'
@@ -722,6 +746,13 @@ const GuessTheMelody = () => {
                 <div className="text-5xl mb-6">{roundWinner.avatar}</div>
                 <h3 className="text-4xl font-black text-yellow-300 mb-6">{roundWinner.name}</h3>
                 
+                <div className="bg-blue-500/20 px-6 py-4 rounded-xl mb-6">
+                  <Music className="w-8 h-8 mx-auto mb-2 text-blue-300" />
+                  <p className="text-2xl font-bold text-white">
+                    {songs[currentSongIndex].title} - {songs[currentSongIndex].artist}
+                  </p>
+                </div>
+                
                 <div className="grid grid-cols-3 gap-6 mb-8">
                   <div className="bg-white/20 p-6 rounded-xl">
                     <Clock className="w-12 h-12 mx-auto mb-2 text-blue-300" />
@@ -744,7 +775,14 @@ const GuessTheMelody = () => {
               <>
                 <Clock className="w-32 h-32 mx-auto mb-6 text-gray-400" />
                 <h2 className="text-5xl font-black text-white mb-4">Ժամանակը Ավարտվեց!</h2>
-                <p className="text-2xl text-white/70 mb-8">Ոչ ոք չգուշակեց այս երգը</p>
+                <p className="text-2xl text-white/70 mb-4">Ոչ ոք չգուշակեց այս երգը</p>
+                
+                <div className="bg-blue-500/20 px-6 py-4 rounded-xl mb-8">
+                  <Music className="w-8 h-8 mx-auto mb-2 text-blue-300" />
+                  <p className="text-2xl font-bold text-white">
+                    Պատասխանը: {songs[currentSongIndex].title} - {songs[currentSongIndex].artist}
+                  </p>
+                </div>
               </>
             )}
 
@@ -802,14 +840,14 @@ const GuessTheMelody = () => {
         <Fireworks />
         
         <div className="absolute inset-0 opacity-20">
-          {[...Array(10)].map((_, i) => (
+          {isMounted && [...Array(10)].map((_, i) => (
             <div
               key={i}
               className="absolute animate-float"
               style={{
-                left: `${Math.random() * 100}%`,
-                top: `${Math.random() * 100}%`,
-                animationDelay: `${Math.random() * 5}s`,
+                left: `${(i * 11) % 100}%`,
+                top: `${(i * 13) % 100}%`,
+                animationDelay: `${(i * 0.5) % 5}s`,
               }}
             >
               <Trophy className="w-24 h-24 text-yellow-200" />
