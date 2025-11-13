@@ -1,11 +1,13 @@
 "use client"
 
 import React, { useState, useEffect, useRef } from 'react';
+import { useRouter } from 'next/navigation'
 import { Sparkles, Snowflake, Gift, Heart, Wine, Users, Award, ChevronDown, ChevronUp, Eye, EyeOff, X, UserPlus, Shuffle, Star, Timer, Play, Pause, RotateCcw, Music, Volume2, VolumeX, Trophy, Plus, Minus, Save, Trash2, Zap, Dices } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { games, type Game, type Participant } from './games-data';
 
 export default function NewYearGames() {
+  const router = useRouter();
   const [selectedGame, setSelectedGame] = useState<Game | null>(null);
   const [printMode, setPrintMode] = useState(false);
   const [expandedGame, setExpandedGame] = useState<number | null>(null);
@@ -1486,7 +1488,7 @@ export default function NewYearGames() {
 
         <div className="fixed left-[2rem] top-[2rem]">
           <button
-            onClick={() => window.location.href = '/'}
+            onClick={() => router.push("/")}
             className="group relative flex px-8 py-4 text-xl font-bold rounded-xl overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-xl h-[3rem] bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-600 hover:to-blue-700 text-white"
           >
             <span className="relative z-10 flex items-center gap-3">
