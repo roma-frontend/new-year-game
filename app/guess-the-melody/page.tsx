@@ -400,7 +400,7 @@ const GuessTheMelody = () => {
           </h1>
           
           <p className="text-3xl text-white/90 mb-12 font-bold animate-fade-in">
-            🎵 Վերջնական Երաժշտական Մրցույթ 🎵
+            🎵 Երաժշտական Մրցույթ 🎵
           </p>
           
           <div className="grid grid-cols-3 gap-6 mb-12">
@@ -748,7 +748,7 @@ const GuessTheMelody = () => {
                       <span className="text-white font-bold">{player.name}</span>
                     </div>
                     <div className="text-sm text-white/70 space-y-1">
-                      <div>Ամենաարագ: {player.fastestGuess?.toFixed(1) || '-'}վ</div>
+                      <div>Ամենաարագ: {player.fastestGuess?.toFixed(1) || '-'}</div>
                       <div>Ճիշտ պատասխաններ: {player.totalGuesses}</div>
                       <div>Ընթացիկ շարք: {player.streak}</div>
                     </div>
