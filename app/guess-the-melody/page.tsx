@@ -327,13 +327,14 @@ const GuessTheMelody = () => {
 
   const getHintText = (level: number, song: Song) => {
     if (level === 1) {
-      return `💡 Подсказка 1: Год ${song.year}`;
+      const firstWord = song.title.split(' ')[0];
+      return `💡 Հուշում 1: Վերնագիրը սկսվում է "${firstWord}" բառով։`;
     } else if (level === 2) {
-      return `💡 Подсказка 2: Исполнитель ${song.artist.substring(0, 3)}...`;
+      return `💡 Հուշում 2: Կատարող ${song.artist.substring(0, 3)}...`;
     }
     return '';
   };
-
+  
   const Confetti = () => {
     if (!showConfetti || !isMounted) return null;
     return (
