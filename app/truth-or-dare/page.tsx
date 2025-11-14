@@ -521,7 +521,7 @@ const TruthOrDareGame = () => {
             </Card>
             <Card className="p-6 bg-white/10 backdrop-blur-xl border-2 border-white/20 hover:bg-white/20 transition-all transform hover:scale-110">
               <Trophy className="w-16 h-16 mx-auto mb-3 text-amber-300" />
-              <p className="text-white font-bold text-lg">Турнирный Режим</p>
+              <p className="text-white font-bold text-lg">Մրցաշարային ռեժիմ</p>
             </Card>
             <Card className="p-6 bg-white/10 backdrop-blur-xl border-2 border-white/20 hover:bg-white/20 transition-all transform hover:scale-110">
               <Heart className="w-16 h-16 mx-auto mb-3 text-pink-300" />
