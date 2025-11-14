@@ -585,12 +585,12 @@ const TruthOrDareGame = () => {
           <Card className="p-8 bg-white/10 backdrop-blur-xl border-2 border-white/20 mb-8">
             <div className="flex items-center gap-4 mb-6">
               <Trophy className="w-10 h-10 text-yellow-300" />
-              <h2 className="text-3xl font-black text-white">Турнирный Режим</h2>
+              <h2 className="text-3xl font-black text-white">Մրցաշարի ռեժիմ</h2>
             </div>
             
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-4">
-                <label className="text-xl text-white font-bold">Включить турнир:</label>
+                <label className="text-xl text-white font-bold">Միացնել մրցաշարը։</label>
                 <button
                   onClick={() => setTournamentSettings(prev => ({ ...prev, enabled: !prev.enabled }))}
                   className={`px-8 py-3 rounded-xl font-bold text-xl transition-all ${
@@ -599,7 +599,7 @@ const TruthOrDareGame = () => {
                       : 'bg-white/20'
                   } text-white`}
                 >
-                  {tournamentSettings.enabled ? '✓ Включен' : 'Выключен'}
+                  {tournamentSettings.enabled ? '✓ Միացված է' : 'Անջատված է'}
                 </button>
               </div>
             </div>
@@ -609,7 +609,7 @@ const TruthOrDareGame = () => {
                 <div>
                   <label className="text-xl text-white font-bold mb-3 block">
                     <Clock className="inline w-6 h-6 mr-2" />
-                    Длительность турнира: {tournamentSettings.duration} минут
+                    Մրցաշարի տևողությունը: {tournamentSettings.duration} րոպե
                   </label>
                   <input
                     type="range"
@@ -621,18 +621,18 @@ const TruthOrDareGame = () => {
                     className="w-full h-3 bg-white/20 rounded-lg appearance-none cursor-pointer"
                   />
                   <div className="flex justify-between text-white/60 text-sm mt-2">
-                    <span>5 мин</span>
-                    <span>15 мин</span>
-                    <span>30 мин</span>
+                    <span>5 րոպե</span>
+                    <span>15 րոպե</span>
+                    <span>30 րոպե</span>
                   </div>
                 </div>
                 
                 <div className="p-4 bg-yellow-500/20 rounded-xl border-2 border-yellow-500/50">
                   <p className="text-white text-lg">
-                    ⏱️ Игра автоматически завершится через {tournamentSettings.duration} минут
+                    ⏱️ Խաղը ավտոմատ կերպով կավարտվի {tournamentSettings.duration} րոպեից
                   </p>
                   <p className="text-white/80 text-sm mt-2">
-                    🏆 Победитель выберет проигравшего для выполнения желания
+                    🏆 Հաղթողը կընտրի պարտվողին, որպեսզի նա կատարի իր ցանկությունը։
                   </p>
                 </div>
               </div>
@@ -702,7 +702,7 @@ const TruthOrDareGame = () => {
               className="bg-gradient-to-r from-yellow-400 via-pink-500 to-purple-600 hover:from-yellow-500 hover:via-pink-600 hover:to-purple-700 px-16 py-6 text-2xl font-black disabled:opacity-50 disabled:cursor-not-allowed shadow-2xl"
             >
               <Play className="mr-3 w-8 h-8" /> 
-              {tournamentSettings.enabled ? `Սկսել Турнир (${tournamentSettings.duration} мин)` : `Սկսել Խաղը (${players.length} խաղացող)`}
+              {tournamentSettings.enabled ? `Սկսել մրցաշարը (${tournamentSettings.duration} րոպե)` : `Սկսել Խաղը (${players.length} խաղացող)`}
             </Button>
           </div>
         </div>
@@ -1046,10 +1046,10 @@ const TruthOrDareGame = () => {
             <Card className="p-12 mb-8 bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 border-4 border-purple-300 shadow-2xl animate-pulse">
               <div className="text-center">
                 <Gift className="w-24 h-24 mx-auto mb-6 text-white animate-bounce" />
-                <h2 className="text-5xl font-black text-white mb-6">🎁 Желание Победителя 🎁</h2>
+                <h2 className="text-5xl font-black text-white mb-6">🎁 Հաղթողի ցանկությունը 🎁</h2>
                 
                 <div className="mb-8">
-                  <p className="text-3xl text-white mb-4">Проигравший:</p>
+                  <p className="text-3xl text-white mb-4">Պարտվող:</p>
                   <div className="text-8xl mb-2">{loserForPunishment.avatar}</div>
                   <h3 className="text-5xl font-black text-white">{loserForPunishment.name}</h3>
                 </div>
@@ -1061,7 +1061,7 @@ const TruthOrDareGame = () => {
                 </div>
                 
                 <p className="text-2xl text-white/80 mt-6">
-                  Выполни это задание для победителя! 🎯
+                Կատարիր այս առաջադրանքը հաղթողի համար։ 🎯
                 </p>
               </div>
             </Card>
