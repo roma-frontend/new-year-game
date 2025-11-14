@@ -1,5 +1,6 @@
 "use client"
 
+import { useRouter } from 'next/navigation'
 import React, { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -33,6 +34,7 @@ interface GameStats {
 }
 
 const GuessTheMelody = () => {
+  const router = useRouter();
   const [gameState, setGameState] = useState<'intro' | 'setup' | 'playing' | 'round-end' | 'finished'>('intro');
   const [players, setPlayers] = useState<Player[]>([]);
   const [newPlayerName, setNewPlayerName] = useState('');
@@ -395,7 +397,7 @@ const GuessTheMelody = () => {
             <Mic2 className="w-40 h-40 mx-auto text-yellow-300 drop-shadow-2xl" />
           </div>
           
-          <h1 className="text-8xl font-black mb-6 bg-gradient-to-r from-yellow-300 via-pink-300 to-purple-300 bg-clip-text text-transparent drop-shadow-2xl animate-pulse">
+          <h1 className="text-[80px] font-black mb-6 bg-gradient-to-r from-yellow-300 via-pink-300 to-purple-300 bg-clip-text text-transparent drop-shadow-2xl animate-pulse">
             Գուշակիր Մեղեդին
           </h1>
           
@@ -420,7 +422,7 @@ const GuessTheMelody = () => {
           
           <Button
             onClick={() => setGameState('setup')}
-            className="bg-gradient-to-r from-yellow-400 via-pink-500 to-purple-600 hover:from-yellow-500 hover:via-pink-600 hover:to-purple-700 text-white px-16 py-10 text-3xl font-black rounded-full shadow-2xl transform hover:scale-110 transition-all animate-pulse"
+            className="bg-gradient-to-r from-yellow-400 via-pink-500 to-purple-600 hover:from-yellow-500 hover:via-pink-600 hover:to-purple-700 text-white !px-16 py-10 text-3xl font-black rounded-full shadow-2xl transform hover:scale-110 transition-all animate-pulse"
           >
             <Play className="mr-4 w-12 h-12" /> Սկսել
           </Button>
@@ -457,6 +459,8 @@ const GuessTheMelody = () => {
                 <Plus className="mr-2" /> Ավելացնել
               </Button>
             </div>
+
+            
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
               {players.map((player, index) => (
@@ -500,6 +504,26 @@ const GuessTheMelody = () => {
             </Button>
           </Card>
         </div>
+
+        <div className="fixed left-[2rem] top-[2rem]">
+                  <button
+                    onClick={() => router.push("/")}
+                    className="group relative flex px-8 py-4 text-xl font-bold rounded-xl overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-xl h-[3rem] bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-600 hover:to-blue-700 text-white"
+                  >
+                    <span className="relative z-10 flex items-center gap-3">
+                      <svg 
+                        className="w-6 h-6 transform group-hover:-translate-x-1 transition-transform duration-300" 
+                        fill="none" 
+                        stroke="currentColor" 
+                        viewBox="0 0 24 24"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                      </svg>
+                      Գլխավոր էջ
+                      <Sparkles className="w-5 h-5 animate-pulse" />
+                    </span>
+                  </button>
+                </div>
       </div>
     );
   }
@@ -758,6 +782,26 @@ const GuessTheMelody = () => {
             </Card>
           )}
         </div>
+
+        <div className="fixed left-[2rem] top-[2rem]">
+                  <button
+                    onClick={() => router.push("/")}
+                    className="group relative flex px-8 py-4 text-xl font-bold rounded-xl overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-xl h-[3rem] bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-600 hover:to-blue-700 text-white"
+                  >
+                    <span className="relative z-10 flex items-center gap-3">
+                      <svg 
+                        className="w-6 h-6 transform group-hover:-translate-x-1 transition-transform duration-300" 
+                        fill="none" 
+                        stroke="currentColor" 
+                        viewBox="0 0 24 24"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                      </svg>
+                      Գլխավոր էջ
+                      <Sparkles className="w-5 h-5 animate-pulse" />
+                    </span>
+                  </button>
+                </div>
       </div>
     );
   }
@@ -857,6 +901,26 @@ const GuessTheMelody = () => {
             </Button>
           </Card>
         </div>
+
+        <div className="fixed left-[2rem] top-[2rem]">
+                  <button
+                    onClick={() => router.push("/")}
+                    className="group relative flex px-8 py-4 text-xl font-bold rounded-xl overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-xl h-[3rem] bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-600 hover:to-blue-700 text-white"
+                  >
+                    <span className="relative z-10 flex items-center gap-3">
+                      <svg 
+                        className="w-6 h-6 transform group-hover:-translate-x-1 transition-transform duration-300" 
+                        fill="none" 
+                        stroke="currentColor" 
+                        viewBox="0 0 24 24"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                      </svg>
+                      Գլխավոր էջ
+                      <Sparkles className="w-5 h-5 animate-pulse" />
+                    </span>
+                  </button>
+                </div>
       </div>
     );
   }
@@ -1046,6 +1110,26 @@ const GuessTheMelody = () => {
             <Play className="mr-4 w-10 h-10" /> Նոր Խաղի Սկիզբ 🎮
           </Button>
         </div>
+
+        <div className="fixed left-[2rem] top-[2rem]">
+                  <button
+                    onClick={() => router.push("/")}
+                    className="group relative flex px-8 py-4 text-xl font-bold rounded-xl overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-xl h-[3rem] bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-600 hover:to-blue-700 text-white"
+                  >
+                    <span className="relative z-10 flex items-center gap-3">
+                      <svg 
+                        className="w-6 h-6 transform group-hover:-translate-x-1 transition-transform duration-300" 
+                        fill="none" 
+                        stroke="currentColor" 
+                        viewBox="0 0 24 24"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                      </svg>
+                      Գլխավոր էջ
+                      <Sparkles className="w-5 h-5 animate-pulse" />
+                    </span>
+                  </button>
+                </div>
       </div>
     );
   }

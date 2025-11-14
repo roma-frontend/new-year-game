@@ -1,6 +1,7 @@
 "use client"
 
 import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button';
 import { Snowflake, Gift, Star, Sparkles, PartyPopper, Heart, Wine, Users, LucideIcon } from 'lucide-react';
 
@@ -14,6 +15,7 @@ interface Particle {
 }
 
 const NewYearLanding = () => {
+  const router = useRouter();
   const [particles, setParticles] = useState<Particle[]>([]);
 
   useEffect(() => {
@@ -115,25 +117,40 @@ const NewYearLanding = () => {
           </p>
         </div>
 
-        {/* CTA Button */}
-        <div className="space-y-6 text-center">
-          <Button
-            onClick={() => window.location.href = '/new-year'}
-            className="group relative px-12 py-8 text-3xl font-bold rounded-2xl overflow-hidden transition-all duration-300 hover:scale-110 hover:shadow-2xl"
-          >
-            <div className="absolute inset-0 bg-gradient-to-r from-red-500 via-pink-500 to-purple-500 animate-gradient"></div>
-            <div className="absolute inset-0 bg-gradient-to-r from-yellow-400 via-red-400 to-pink-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-            <span className="relative z-10 flex items-center gap-4">
-              <Gift className="w-10 h-10 animate-bounce" />
-              Սկսել Խաղալ
-              <PartyPopper className="w-10 h-10 animate-bounce" style={{ animationDelay: '0.2s' }} />
-            </span>
-          </Button>
+        {/* CTA Buttons */}
+<div className="space-y-6 text-center">
+  <div className="flex flex-col md:flex-row gap-6 justify-center">
+    <Button
+      onClick={() => router.push("/guess-the-melody")}
+      className="group relative px-12 py-8 text-3xl font-bold rounded-2xl overflow-hidden transition-all duration-300 hover:scale-110 hover:shadow-2xl"
+    >
+      <div className="absolute inset-0 bg-gradient-to-r from-yellow-500 via-orange-500 to-red-500 animate-gradient"></div>
+      <div className="absolute inset-0 bg-gradient-to-r from-yellow-400 via-orange-400 to-red-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+      <span className="relative z-10 flex items-center gap-4">
+        <Sparkles className="w-10 h-10 animate-bounce" />
+        Բախտի անիվ
+        <Star className="w-10 h-10 animate-bounce" style={{ animationDelay: '0.2s' }} />
+      </span>
+    </Button>
 
-          <p className="text-center text-white/60 text-lg">
-            Տպեք քարտերը և վայելեք խաղերը ձեր թիմի հետ! 🎄
-          </p>
-        </div>
+    <Button
+      onClick={() => router.push("/new-year")}
+      className="group relative px-12 py-8 text-3xl font-bold rounded-2xl overflow-hidden transition-all duration-300 hover:scale-110 hover:shadow-2xl"
+    >
+      <div className="absolute inset-0 bg-gradient-to-r from-red-500 via-pink-500 to-purple-500 animate-gradient"></div>
+      <div className="absolute inset-0 bg-gradient-to-r from-red-400 via-pink-400 to-purple-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+      <span className="relative z-10 flex items-center gap-4">
+        <Gift className="w-10 h-10 animate-bounce" />
+        Ամանորյա խաղեր
+        <PartyPopper className="w-10 h-10 animate-bounce" style={{ animationDelay: '0.2s' }} />
+      </span>
+    </Button>
+  </div>
+
+  <p className="text-center text-white/60 text-lg">
+    Տպեք քարտերը և վայելեք խաղերը ձեր թիմի հետ! 🎄
+  </p>
+</div>
 
         {/* Features grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-16 max-w-5xl mx-auto w-full">
