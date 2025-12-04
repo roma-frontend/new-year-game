@@ -2129,7 +2129,7 @@ useEffect(() => {
 
                                     <Button
                                         onClick={nextQuestion}
-                                        className="px-16 py-8 text-3xl font-black rounded-2xl bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 hover:from-blue-500 hover:via-purple-500 hover:to-pink-500 hover:scale-105 transition-transform group shadow-2xl shadow-blue-500/30"
+                                        className="px-16 py-8 text-2xl font-black rounded-2xl bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 hover:from-blue-500 hover:via-purple-500 hover:to-pink-500 hover:scale-105 transition-transform group shadow-2xl shadow-blue-500/30"
                                     >
                                         {currentQuestion < shuffledQuestions.length - 1 ? (
                                             <>
