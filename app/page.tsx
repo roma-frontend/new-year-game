@@ -116,7 +116,7 @@ const NewYearLanding = () => {
 
         {/* CTA Buttons */}
 <div className="space-y-6 text-center">
-  <div className="flex flex-col md:flex-row gap-6 justify-center">
+  <div className="flex flex-wrap gap-6 justify-center">
     <Button
       onClick={() => router.push("/guess-the-melody")}
       className="group relative px-12 py-8 text-3xl font-bold rounded-2xl overflow-hidden transition-all duration-300 hover:scale-110 hover:shadow-2xl"

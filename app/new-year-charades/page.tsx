@@ -1,11 +1,11 @@
 "use client"
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Timer, Users, Trophy, Sparkles, Zap, Clock, Star, Play, Pause, RotateCcw, Settings, TrendingUp, Award, Target, Flame, Shield, Gift, Music, Mic, Volume2, VolumeX, Eye, EyeOff, ChevronRight, Plus, Minus, Check, X, Crown, Rocket, Heart, Brain, Coffee, BookOpen, Lightbulb, Siren, PartyPopper, Snowflake, Volume, Bell, AlertCircle, BrainCircuit, LightbulbOff, Moon, Sun, CloudRain, Wind, BrickWallFire, User, UserPlus, UserMinus, Edit, Trash2, Save, Mail, Phone, Briefcase, MapPin, Calendar } from 'lucide-react';
+import { Timer, Users, Trophy, Sparkles, Zap, Clock, Star, Play, Pause, RotateCcw, Settings, TrendingUp, Award, Target, Flame, Shield, Gift, Music, Mic, Volume2, VolumeX, Eye, EyeOff, ChevronRight, Plus, Minus, Check, X, Crown, Rocket, Heart, Brain, Coffee, BookOpen, Lightbulb, Siren, PartyPopper, Snowflake, Volume, Bell, AlertCircle, BrainCircuit, LightbulbOff, Moon, Sun, CloudRain, Wind, BrickWallFire, User, UserPlus, UserMinus, Edit, Trash2, Save, Mail, Phone, Briefcase, MapPin, Calendar, Hash } from 'lucide-react';
 import useSound from 'use-sound';
 
 // Типы для игры
-type GameState = 'menu' | 'setup' | 'teamSetup' | 'playerSetup' | 'ready' | 'playing' | 'results';
+type GameState = 'menu' | 'setup' | 'teamSetup' | 'ready' | 'playing' | 'results';
 type Difficulty = 'easy' | 'medium' | 'hard' | 'expert' | 'insane';
 type GameMode = 'classic' | 'tournament' | 'survival' | 'blitz' | 'cooperation';
 type Theme = 'night' | 'aurora' | 'fire' | 'ocean';
@@ -16,11 +16,6 @@ interface Player {
     id: string;
     name: string;
     avatar: string;
-    department: string;
-    position: string;
-    email: string;
-    phone: string;
-    experience: number; // 1-5
     isActive: boolean;
     stats: {
         gamesPlayed: number;
@@ -73,7 +68,7 @@ interface Team {
     color: string;
     emoji: string;
     players: Player[];
-    captain: Player;
+    captain: Player | null;
     score: number;
     specialCards: Record<SpecialCardType, number>;
     correctGuesses: number;
@@ -84,7 +79,6 @@ interface Team {
     lives: number;
     efficiency: number;
     lastAction: { type: string; points?: number; time: number } | null;
-    department: string;
 }
 
 interface Card {
@@ -132,226 +126,6 @@ interface Particle {
     opacity: number;
 }
 
-// Предзагруженные данные сотрудников офиса
-const predefinedPlayers: Player[] = [
-    {
-        id: '1',
-        name: 'Արամ Մկրտչյան',
-        avatar: '👨‍💼',
-        department: 'Ծրագրավորում',
-        position: 'Senior Developer',
-        email: 'aram@company.com',
-        phone: '+374 77 123456',
-        experience: 5,
-        isActive: true,
-        stats: {
-            gamesPlayed: 12,
-            gamesWon: 8,
-            totalPoints: 1450,
-            accuracy: 87,
-            favoriteCategory: 'science'
-        }
-    },
-    {
-        id: '2',
-        name: 'Անի Պետրոսյան',
-        avatar: '👩‍🎨',
-        department: 'Նախագծում',
-        position: 'UI/UX Designer',
-        email: 'ani@company.com',
-        phone: '+374 77 234567',
-        experience: 4,
-        isActive: true,
-        stats: {
-            gamesPlayed: 15,
-            gamesWon: 10,
-            totalPoints: 1780,
-            accuracy: 92,
-            favoriteCategory: 'emotions'
-        }
-    },
-    {
-        id: '3',
-        name: 'Տիգրան Գրիգորյան',
-        avatar: '👨‍💻',
-        department: 'Ծրագրավորում',
-        position: 'Full Stack Developer',
-        email: 'tigran@company.com',
-        phone: '+374 77 345678',
-        experience: 3,
-        isActive: true,
-        stats: {
-            gamesPlayed: 8,
-            gamesWon: 5,
-            totalPoints: 920,
-            accuracy: 76,
-            favoriteCategory: 'movies'
-        }
-    },
-    {
-        id: '4',
-        name: 'Լիլիթ Սարգսյան',
-        avatar: '👩‍💼',
-        department: 'Վաճառք',
-        position: 'Sales Manager',
-        email: 'lilit@company.com',
-        phone: '+374 77 456789',
-        experience: 4,
-        isActive: true,
-        stats: {
-            gamesPlayed: 10,
-            gamesWon: 6,
-            totalPoints: 1100,
-            accuracy: 81,
-            favoriteCategory: 'celebrities'
-        }
-    },
-    {
-        id: '5',
-        name: 'Արթուր Դավթյան',
-        avatar: '👨‍🔧',
-        department: 'IT Աջակցում',
-        position: 'System Administrator',
-        email: 'artur@company.com',
-        phone: '+374 77 567890',
-        experience: 5,
-        isActive: true,
-        stats: {
-            gamesPlayed: 20,
-            gamesWon: 15,
-            totalPoints: 2450,
-            accuracy: 94,
-            favoriteCategory: 'science'
-        }
-    },
-    {
-        id: '6',
-        name: 'Մարինե Կարապետյան',
-        avatar: '👩‍🏫',
-        department: 'Մարքեթինգ',
-        position: 'Marketing Specialist',
-        email: 'marine@company.com',
-        phone: '+374 77 678901',
-        experience: 3,
-        isActive: true,
-        stats: {
-            gamesPlayed: 7,
-            gamesWon: 4,
-            totalPoints: 780,
-            accuracy: 72,
-            favoriteCategory: 'traditions'
-        }
-    },
-    {
-        id: '7',
-        name: 'Հակոբ Ավետիսյան',
-        avatar: '👨‍🎓',
-        department: 'Վերլուծություն',
-        position: 'Data Analyst',
-        email: 'hakob@company.com',
-        phone: '+374 77 789012',
-        experience: 4,
-        isActive: true,
-        stats: {
-            gamesPlayed: 9,
-            gamesWon: 5,
-            totalPoints: 980,
-            accuracy: 79,
-            favoriteCategory: 'science'
-        }
-    },
-    {
-        id: '8',
-        name: 'Նարե Մովսիսյան',
-        avatar: '👩‍💻',
-        department: 'Ծրագրավորում',
-        position: 'Frontend Developer',
-        email: 'nare@company.com',
-        phone: '+374 77 890123',
-        experience: 2,
-        isActive: true,
-        stats: {
-            gamesPlayed: 5,
-            gamesWon: 2,
-            totalPoints: 520,
-            accuracy: 68,
-            favoriteCategory: 'actions'
-        }
-    },
-    {
-        id: '9',
-        name: 'Գագիկ Մարտիրոսյան',
-        avatar: '👨‍🔬',
-        department: 'Որակի ապահովում',
-        position: 'QA Engineer',
-        email: 'gagik@company.com',
-        phone: '+374 77 901234',
-        experience: 3,
-        isActive: true,
-        stats: {
-            gamesPlayed: 11,
-            gamesWon: 7,
-            totalPoints: 1250,
-            accuracy: 83,
-            favoriteCategory: 'objects'
-        }
-    },
-    {
-        id: '10',
-        name: 'Սոնա Հակոբյան',
-        avatar: '👩‍⚖️',
-        department: 'Իրավաբանական',
-        position: 'Legal Advisor',
-        email: 'sona@company.com',
-        phone: '+374 77 012345',
-        experience: 4,
-        isActive: true,
-        stats: {
-            gamesPlayed: 6,
-            gamesWon: 3,
-            totalPoints: 650,
-            accuracy: 71,
-            favoriteCategory: 'professions'
-        }
-    },
-    {
-        id: '11',
-        name: 'Աշոտ Գևորգյան',
-        avatar: '👨‍✈️',
-        department: 'Կառավարում',
-        position: 'Project Manager',
-        email: 'ashot@company.com',
-        phone: '+374 77 112233',
-        experience: 5,
-        isActive: true,
-        stats: {
-            gamesPlayed: 18,
-            gamesWon: 12,
-            totalPoints: 2100,
-            accuracy: 89,
-            favoriteCategory: 'places'
-        }
-    },
-    {
-        id: '12',
-        name: 'Էլեն Մկրտումյան',
-        avatar: '👩‍🍳',
-        department: 'Մարդկային ռեսուրսներ',
-        position: 'HR Specialist',
-        email: 'elen@company.com',
-        phone: '+374 77 223344',
-        experience: 3,
-        isActive: true,
-        stats: {
-            gamesPlayed: 8,
-            gamesWon: 4,
-            totalPoints: 850,
-            accuracy: 75,
-            favoriteCategory: 'food'
-        }
-    }
-];
-
 const teamColors = [
     { color: 'from-blue-500 to-cyan-500', bg: 'bg-gradient-to-r from-blue-500 to-cyan-500', emoji: '🔵' },
     { color: 'from-red-500 to-pink-500', bg: 'bg-gradient-to-r from-red-500 to-pink-500', emoji: '🔴' },
@@ -362,6 +136,8 @@ const teamColors = [
     { color: 'from-pink-500 to-rose-500', bg: 'bg-gradient-to-r from-pink-500 to-rose-500', emoji: '🎀' },
     { color: 'from-indigo-500 to-blue-500', bg: 'bg-gradient-to-r from-indigo-500 to-blue-500', emoji: '🌀' }
 ];
+
+const playerAvatars = ['👤', '👨', '👩', '🧑', '🧔', '👨‍💼', '👩‍💼', '👨‍🔧', '👩‍🔧', '👨‍🎓', '👩‍🎓', '👨‍🍳', '👩‍🍳', '👨‍🔬', '👩‍🔬'];
 
 const NewYearCharades = () => {
     const [gameState, setGameState] = useState<GameState>('menu');
@@ -393,7 +169,7 @@ const NewYearCharades = () => {
     const [streak, setStreak] = useState(0);
     const [achievements, setAchievements] = useState<Achievement[]>([]);
     const [cardBack, setCardBack] = useState('gradient1');
-    const [teamSize, setTeamSize] = useState(4);
+    const [teamSize, setTeamSize] = useState(2);
     const [pointsToWin, setPointsToWin] = useState(30);
     const [animateCard, setAnimateCard] = useState(false);
     const [theme, setTheme] = useState<Theme>('night');
@@ -407,20 +183,17 @@ const NewYearCharades = () => {
     const [particles, setParticles] = useState<Particle[]>([]);
     const [ambientSounds, setAmbientSounds] = useState(true);
     
-    // Новые состояния для управления командами и игроками
-    const [availablePlayers, setAvailablePlayers] = useState<Player[]>(predefinedPlayers);
+    // Состояния для управления командами и игроками
+    const [availablePlayers, setAvailablePlayers] = useState<Player[]>([]);
     const [editingTeam, setEditingTeam] = useState<Team | null>(null);
     const [newTeamName, setNewTeamName] = useState('');
     const [selectedTeamColor, setSelectedTeamColor] = useState(0);
-    const [customPlayers, setCustomPlayers] = useState<Player[]>([]);
     const [newPlayerName, setNewPlayerName] = useState('');
-    const [newPlayerDepartment, setNewPlayerDepartment] = useState('');
-    const [newPlayerPosition, setNewPlayerPosition] = useState('');
-    const [newPlayerEmail, setNewPlayerEmail] = useState('');
-    const [newPlayerPhone, setNewPlayerPhone] = useState('');
-    const [showPlayerForm, setShowPlayerForm] = useState(false);
+    const [selectedPlayerAvatar, setSelectedPlayerAvatar] = useState(0);
+    const [showAddPlayerForm, setShowAddPlayerForm] = useState(false);
     const [teamSearchTerm, setTeamSearchTerm] = useState('');
     const [playerSearchTerm, setPlayerSearchTerm] = useState('');
+    const [showTeamPlayers, setShowTeamPlayers] = useState<string | null>(null);
 
     // Заглушки для звуков
     const [playCorrect] = useSound('/sounds/correct.mp3', { volume: 0.5 });
@@ -514,22 +287,6 @@ const NewYearCharades = () => {
             icon: <Lightbulb className="w-5 h-5" />,
             difficulty: 2,
             description: 'Առօրյա առարկաներ'
-        },
-        science: {
-            name: 'Գիտություն',
-            emoji: '🔬',
-            color: 'from-indigo-600 to-purple-700',
-            icon: <BrainCircuit className="w-5 h-5" />,
-            difficulty: 5,
-            description: 'Գիտական տերմիններ և հայտնագործություններ'
-        },
-        literature: {
-            name: 'Գրականություն',
-            emoji: '📚',
-            color: 'from-amber-600 to-orange-700',
-            icon: <BookOpen className="w-5 h-5" />,
-            difficulty: 4,
-            description: 'Գրական ստեղծագործություններ և հեղինակներ'
         }
     };
 
@@ -543,9 +300,7 @@ const NewYearCharades = () => {
         animals: ['Սպիտակ արջ', 'Պինգվին', 'Հյուսիսային եղջերու', 'Նապաստակ', 'Աղվես', 'Գայլ', 'Բու', 'Դելֆին', 'Ընձուղտ', 'Փիղ', 'Կենգուրու', 'Պանդա', 'Կոալա', 'Առյուծ', 'Վագր'],
         food: ['Տորթ', 'Պաղպաղակ', 'Պիցցա', 'Սուշի', 'Բուրգեր', 'Պաստա', 'Սուրճ', 'Թեյ', 'Շոկոլադ', 'Կրուասան', 'Կրեպ', 'Վաֆլի', 'Պոնչիկ', 'Պոպկոռն', 'Լիմոնադ'],
         places: ['Կարմիր հրապարակ', 'Էյֆելյան աշտարակ', 'Բուրգեր', 'Կոլիզեում', 'Ազատության արձան', 'Բիգ Բեն', 'Տաջ Մահալ', 'Դիսնեյլենդ', 'Ակվապարկ', 'Թանգարան', 'Ծովափ', 'Լեռներ', 'Անտառ', 'Վայր', 'Տիեզերք'],
-        objects: ['Խելացի հեռախոս', 'Եղևնու խաղալիք', 'Նվերի տուփ', 'Ձյունանուշ', 'Երիզում', 'Մոմ', 'Ֆոտոապարատ', 'Ժամացույց', 'Հովանոց', 'Աչոցներ', 'Համետ', 'Գիրք', 'Կիթառ', 'Շարֆ', 'Սահնակ'],
-        science: ['Գրավիտացիա', 'ԴՆԹ', 'Քվանտային ֆիզիկա', 'Էվոլյուցիա', 'Պերիոդիկ աղյուսակ', 'Ֆոտոսինթեզ', 'Ռելյատիվիզմ', 'Նեյտրոն', 'Գեն', 'Բջիջ', 'Մոլեկուլ', 'Ատոմ', 'Էլեկտրոն', 'Պրոտոն', 'Գալակտիկա'],
-        literature: ['Մեծ Գացբի', 'Պատերազմ և խաղաղություն', 'Դոն Կիխոտ', 'Համլետ', 'Կոմս Մոնտե Քրիստո', 'Աննա Կարենինա', 'Ծերունին և ծովը', 'Գանձերի կղզին', 'Փոքրիկ իշխան', 'Մոբի Դիկ', 'Ուլիսես', 'Դեկամերոն', 'Դիվինա կոմեդիա', 'Ֆաուստ', 'Մակբեթ']
+        objects: ['Խելացի հեռախոս', 'Եղևնու խաղալիք', 'Նվերի տուփ', 'Ձյունանուշ', 'Երիզում', 'Մոմ', 'Ֆոտոապարատ', 'Ժամացույց', 'Հովանոց', 'Աչոցներ', 'Համետ', 'Գիրք', 'Կիթառ', 'Շարֆ', 'Սահնակ']
     };
 
     const difficultySettings: Record<Difficulty, DifficultySetting> = {
@@ -698,41 +453,20 @@ const NewYearCharades = () => {
             description: '+3 միավոր', 
             color: 'from-amber-400 to-yellow-500',
             effect: 'Անմիջական միավորներ'
-        },
-        {
-            type: 'timeWarp',
-            name: 'Ժամանակի ճեղք',
-            emoji: '⏳',
-            description: 'Ժամանակը կանգնեցնել 5 վրկ',
-            color: 'from-gray-500 to-blue-800',
-            effect: 'Ժամանակի սառեցում'
-        },
-        {
-            type: 'mindReader',
-            name: 'Մտքերը կարդալ',
-            emoji: '🧠',
-            description: 'Տեսնել հակառակորդի բառը',
-            color: 'from-purple-600 to-pink-700',
-            effect: 'Տեղեկատվության ձեռքբերում'
         }
     ];
 
     // Функции для управления игроками
-    const addCustomPlayer = () => {
+    const addNewPlayer = () => {
         if (!newPlayerName.trim()) {
             alert('Խնդրում ենք մուտքագրել խաղացողի անունը');
             return;
         }
 
         const newPlayer: Player = {
-            id: `custom-${Date.now()}`,
+            id: `player-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
             name: newPlayerName,
-            avatar: '👤',
-            department: newPlayerDepartment || 'Այլ',
-            position: newPlayerPosition || 'Խաղացող',
-            email: newPlayerEmail || '',
-            phone: newPlayerPhone || '',
-            experience: 1,
+            avatar: playerAvatars[selectedPlayerAvatar],
             isActive: true,
             stats: {
                 gamesPlayed: 0,
@@ -743,22 +477,25 @@ const NewYearCharades = () => {
             }
         };
 
-        setCustomPlayers(prev => [...prev, newPlayer]);
         setAvailablePlayers(prev => [...prev, newPlayer]);
-        
         setNewPlayerName('');
-        setNewPlayerDepartment('');
-        setNewPlayerPosition('');
-        setNewPlayerEmail('');
-        setNewPlayerPhone('');
-        setShowPlayerForm(false);
+        setSelectedPlayerAvatar(0);
+        setShowAddPlayerForm(false);
 
         if (soundEnabled) playClick();
     };
 
     const removePlayer = (playerId: string) => {
-        setCustomPlayers(prev => prev.filter(p => p.id !== playerId));
+        // Удаляем игрока из всех команд
+        setTeams(prev => prev.map(team => ({
+            ...team,
+            players: team.players.filter(p => p.id !== playerId),
+            captain: team.captain?.id === playerId ? (team.players.length > 1 ? team.players.find(p => p.id !== playerId) || null : null) : team.captain
+        })));
+        
+        // Удаляем игрока из списка доступных
         setAvailablePlayers(prev => prev.filter(p => p.id !== playerId));
+        
         if (soundEnabled) playClick();
     };
 
@@ -770,12 +507,12 @@ const NewYearCharades = () => {
         }
 
         const newTeam: Team = {
-            id: `team-${Date.now()}`,
+            id: `team-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
             name: newTeamName,
             color: teamColors[selectedTeamColor].color,
             emoji: teamColors[selectedTeamColor].emoji,
             players: [],
-            captain: null!,
+            captain: null,
             score: 0,
             specialCards: {
                 joker: 2,
@@ -786,7 +523,7 @@ const NewYearCharades = () => {
                 bomb: 1,
                 vision: 1,
                 bonus: 1,
-                timeWarp: 1,
+                timeWarp: 0,
                 mindReader: 0
             },
             correctGuesses: 0,
@@ -796,8 +533,7 @@ const NewYearCharades = () => {
             maxStreak: 0,
             lives: gameMode === 'survival' ? 3 : 0,
             efficiency: 0,
-            lastAction: null,
-            department: 'Խառը'
+            lastAction: null
         };
 
         setTeams(prev => [...prev, newTeam]);
@@ -807,17 +543,17 @@ const NewYearCharades = () => {
         if (soundEnabled) playSpecial();
     };
 
-    const addPlayerToTeam = (teamId: string, player: Player) => {
+    const addPlayerToTeam = (teamId: string, playerId: string) => {
+        const player = availablePlayers.find(p => p.id === playerId);
+        if (!player) return;
+
         setTeams(prev => prev.map(team => {
-            if (team.id === teamId && !team.players.some(p => p.id === player.id)) {
+            if (team.id === teamId && !team.players.some(p => p.id === playerId)) {
                 const updatedPlayers = [...team.players, player];
                 return {
                     ...team,
                     players: updatedPlayers,
-                    captain: updatedPlayers.length === 1 ? player : team.captain,
-                    department: updatedPlayers.length > 0 
-                        ? updatedPlayers[0].department 
-                        : 'Խառը'
+                    captain: team.captain || player
                 };
             }
             return team;
@@ -833,10 +569,7 @@ const NewYearCharades = () => {
                 return {
                     ...team,
                     players: updatedPlayers,
-                    captain: updatedPlayers.length > 0 ? updatedPlayers[0] : null!,
-                    department: updatedPlayers.length > 0 
-                        ? updatedPlayers[0].department 
-                        : 'Խառը'
+                    captain: team.captain?.id === playerId ? (updatedPlayers.length > 0 ? updatedPlayers[0] : null) : team.captain
                 };
             }
             return team;
@@ -860,6 +593,15 @@ const NewYearCharades = () => {
     };
 
     const deleteTeam = (teamId: string) => {
+        // Возвращаем игроков команды в список доступных
+        const teamToDelete = teams.find(team => team.id === teamId);
+        if (teamToDelete) {
+            const playersToReturn = teamToDelete.players.filter(player => 
+                !teams.some(t => t.id !== teamId && t.players.some(p => p.id === player.id))
+            );
+            setAvailablePlayers(prev => [...prev, ...playersToReturn]);
+        }
+        
         setTeams(prev => prev.filter(team => team.id !== teamId));
         if (soundEnabled) playClick();
     };
@@ -881,17 +623,14 @@ const NewYearCharades = () => {
 
     // Фильтры для поиска
     const filteredAvailablePlayers = availablePlayers.filter(player =>
-        player.name.toLowerCase().includes(playerSearchTerm.toLowerCase()) ||
-        player.department.toLowerCase().includes(playerSearchTerm.toLowerCase()) ||
-        player.position.toLowerCase().includes(playerSearchTerm.toLowerCase())
+        player.name.toLowerCase().includes(playerSearchTerm.toLowerCase())
     );
 
     const filteredTeams = teams.filter(team =>
-        team.name.toLowerCase().includes(teamSearchTerm.toLowerCase()) ||
-        team.department.toLowerCase().includes(teamSearchTerm.toLowerCase())
+        team.name.toLowerCase().includes(teamSearchTerm.toLowerCase())
     );
 
-    // AI Assistant hints based on word difficulty
+    // Функции для игры
     const getAIHint = (word: string, category: string, difficultyLevel: string): string[] => {
         const hints = {
             easy: [
@@ -1315,27 +1054,16 @@ const NewYearCharades = () => {
                 ));
                 setLastAction('Բոնուս քարտ օգտագործված! +3 միավոր');
                 break;
-            case 'timeWarp':
-                setTimeLeft(prev => prev + 5);
-                setLastAction('Ժամանակի ճեղք քարտ օգտագործված! Ժամանակը կանգնեցված է 5 վայրկյան');
-                break;
-            case 'mindReader':
-                if (currentCard) {
-                    alert(`🧠 Հակառակորդի բառը: ${currentCard.word}\n${currentCard.aiHint[0]}`);
-                }
-                setLastAction('Մտքերը կարդալու քարտ օգտագործված');
-                break;
         }
     };
 
     const endGame = () => {
         const sortedTeams = [...teams].sort((a, b) => b.score - a.score);
         const winner = sortedTeams[0];
-        const bestPlayer = sortedTeams.sort((a, b) => b.correctGuesses - a.correctGuesses)[0];
         
         setStats(prev => ({ 
             ...prev, 
-            bestPlayer: bestPlayer.name,
+            bestPlayer: sortedTeams.sort((a, b) => b.correctGuesses - a.correctGuesses)[0].name,
             totalTime: prev.history.reduce((sum, item) => sum + item.time, 0)
         }));
         
@@ -1497,21 +1225,21 @@ const NewYearCharades = () => {
                         <div className="text-center mb-8">
                             <div className="text-8xl mb-4 animate-pulse">🎭</div>
                             <h1 className="text-6xl font-black text-white mb-3 bg-gradient-to-r from-yellow-300 via-pink-300 to-purple-300 bg-clip-text text-transparent">
-                                Ամանորյա Կոկորդիլոս AI
+                                Ամանորյա Կոկորդիլոս
                             </h1>
-                            <p className="text-2xl text-blue-200">Խելացի խաղ՝ AI օգնությամբ</p>
+                            <p className="text-2xl text-blue-200">Ստեղծեք ձեր սեփական թիմերը և խաղացեք!</p>
                             <div className="flex items-center justify-center gap-2 mt-2">
                                 <div className="flex items-center gap-1">
-                                    <Brain className="w-4 h-4 text-green-400" />
-                                    <span className="text-sm text-green-300">AI օգնական</span>
+                                    <Users className="w-4 h-4 text-green-400" />
+                                    <span className="text-sm text-green-300">Սեփական թիմեր</span>
                                 </div>
                                 <div className="flex items-center gap-1">
-                                    <Sparkles className="w-4 h-4 text-yellow-400" />
-                                    <span className="text-sm text-yellow-300">Դինամիկ բարդություն</span>
+                                    <UserPlus className="w-4 h-4 text-yellow-400" />
+                                    <span className="text-sm text-yellow-300">Ավելացրեք խաղացողներ</span>
                                 </div>
                                 <div className="flex items-center gap-1">
                                     <Zap className="w-4 h-4 text-blue-400" />
-                                    <span className="text-sm text-blue-300">Ինտելեկտուալ հուշումներ</span>
+                                    <span className="text-sm text-blue-300">Բաց թողեք կրեատիվությունը</span>
                                 </div>
                             </div>
                         </div>
@@ -1558,8 +1286,8 @@ const NewYearCharades = () => {
                             </div>
                             <div className="bg-white/5 rounded-xl p-4 border border-white/10 hover:bg-white/10 transition-all">
                                 <div className="text-3xl mb-2">👥</div>
-                                <div className="text-white font-semibold">{availablePlayers.length} խաղացող</div>
-                                <div className="text-white/60 text-sm">Կառավարեք թիմերը</div>
+                                <div className="text-white font-semibold">Անսահմանափակ խաղացողներ</div>
+                                <div className="text-white/60 text-sm">Ավելացրեք ձեր ընկերներին</div>
                             </div>
                             <div className="bg-white/5 rounded-xl p-4 border border-white/10 hover:bg-white/10 transition-all">
                                 <div className="text-3xl mb-2">✨</div>
@@ -1574,7 +1302,7 @@ const NewYearCharades = () => {
                                     <BrainCircuit className="w-6 h-6 text-green-400" />
                                     <div>
                                         <div className="text-green-300 font-semibold">AI օգնական ակտիվ է</div>
-                                        <div className="text-green-400/80 text-sm">Պատրաստ է տրամադրել խելացի հուշումներ և հարմարեցնել խաղը ձեր հմտություններին</div>
+                                        <div className="text-green-400/80 text-sm">Պատրաստ է տրամադրել խելացի հուշումներ խաղի ընթացքում</div>
                                     </div>
                                 </div>
                             </div>
@@ -1605,20 +1333,13 @@ const NewYearCharades = () => {
                             ⚙️ Խաղի կարգավորում
                         </h2>
 
-                        {/* Difficulty Selection with AI Analysis */}
+                        {/* Difficulty Selection */}
                         <div className="mb-8">
                             <div className="flex items-center justify-between mb-4">
                                 <h3 className="text-2xl font-bold text-white flex items-center gap-2">
                                     <Flame className="text-orange-400" />
                                     Ընտրեք բարդությունը
                                 </h3>
-                                {aiAssistant && (
-                                    <div className="text-sm text-blue-300 bg-blue-900/30 px-3 py-1 rounded-full">
-                                        AI խորհուրդ՝ {difficulty === 'easy' ? 'Սկսնակներ' : 
-                                                       difficulty === 'medium' ? 'Միջին մակարդակ' : 
-                                                       difficulty === 'hard' ? 'Փորձառու' : 'Մասնագետ'}
-                                    </div>
-                                )}
                             </div>
                             <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
                                 {Object.entries(difficultySettings).map(([key, value]) => (
@@ -1643,7 +1364,7 @@ const NewYearCharades = () => {
                             </div>
                         </div>
 
-                        {/* Category Selection with AI Recommendations */}
+                        {/* Category Selection */}
                         <div className="mb-8">
                             <div className="flex items-center justify-between mb-4">
                                 <h3 className="text-2xl font-bold text-white flex items-center gap-2">
@@ -1671,7 +1392,7 @@ const NewYearCharades = () => {
                                     </button>
                                 </div>
                             </div>
-                            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
+                            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-3">
                                 {Object.entries(categories).map(([key, cat]) => (
                                     <button
                                         key={key}
@@ -1771,7 +1492,7 @@ const NewYearCharades = () => {
                             }}
                             className="w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white text-2xl font-bold py-6 rounded-2xl shadow-xl transition-all transform hover:scale-105 hover:shadow-2xl"
                         >
-                            Կառավարել Թիմերը →
+                            Ստեղծել Թիմերը →
                         </button>
                     </div>
                 </div>
@@ -1798,15 +1519,11 @@ const NewYearCharades = () => {
                         <div className="flex items-center justify-between mb-8">
                             <h2 className="text-4xl font-bold text-white flex items-center gap-3">
                                 <Users className="text-blue-400" />
-                                Թիմերի Կառավարում
+                                Թիմերի Ստեղծում
                             </h2>
-                            <button
-                                onClick={() => setGameState('playerSetup')}
-                                className="bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 text-white px-6 py-3 rounded-xl transition-all transform hover:scale-105 flex items-center gap-2"
-                            >
-                                <UserPlus className="w-5 h-5" />
-                                Ավելացնել խաղացող
-                            </button>
+                            <div className="text-white/60 text-sm">
+                                {availablePlayers.length} խաղացող, {teams.length} թիմ
+                            </div>
                         </div>
 
                         {/* Создание новой команды */}
@@ -1817,14 +1534,16 @@ const NewYearCharades = () => {
                             </h3>
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                 <div>
-                                    <label className="block text-white/80 text-sm mb-2">Թիմի Անուն</label>
+                                    <label className="block text-white/80 text-sm mb-2">Թիմի Անուն *</label>
                                     <input
                                         type="text"
                                         value={newTeamName}
                                         onChange={(e) => setNewTeamName(e.target.value)}
                                         className="w-full bg-white/10 border border-white/20 rounded-lg px-4 py-3 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                        placeholder="Օրինակ՝ IT Բաժին"
+                                        placeholder="Օրինակ՝ Ծրագրավորողներ"
+                                        maxLength={30}
                                     />
+                                    <div className="text-white/40 text-xs mt-1 text-right">{newTeamName.length}/30</div>
                                 </div>
                                 <div>
                                     <label className="block text-white/80 text-sm mb-2">Գույն և Սիմվոլ</label>
@@ -1833,8 +1552,9 @@ const NewYearCharades = () => {
                                             <button
                                                 key={idx}
                                                 onClick={() => setSelectedTeamColor(idx)}
-                                                className={`p-3 rounded-lg transition-all ${selectedTeamColor === idx ? 'ring-2 ring-white scale-110' : 'hover:scale-105'}`}
+                                                className={`p-3 rounded-lg transition-all transform ${selectedTeamColor === idx ? 'ring-2 ring-white scale-110' : 'hover:scale-105'}`}
                                                 style={{ background: color.bg }}
+                                                title={`${color.emoji} թիմ`}
                                             >
                                                 <span className="text-2xl">{color.emoji}</span>
                                             </button>
@@ -1852,349 +1572,277 @@ const NewYearCharades = () => {
                             </div>
                         </div>
 
-                        {/* Поиск команд */}
-                        <div className="mb-6">
-                            <div className="relative">
-                                <input
-                                    type="text"
-                                    value={teamSearchTerm}
-                                    onChange={(e) => setTeamSearchTerm(e.target.value)}
-                                    className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-blue-500 pl-12"
-                                    placeholder="Որոնել թիմեր..."
-                                />
-                                <Users className="absolute left-4 top-1/2 transform -translate-y-1/2 text-white/50 w-5 h-5" />
-                            </div>
-                        </div>
-
-                        {/* Список существующих команд */}
-                        <div className="mb-8">
-                            <h3 className="text-2xl font-bold text-white mb-4">
-                                Ընթացիկ Թիմեր ({filteredTeams.length})
-                            </h3>
-                            
-                            {filteredTeams.length === 0 ? (
-                                <div className="text-center py-12 bg-white/5 rounded-2xl border border-white/10">
-                                    <div className="text-6xl mb-4">👥</div>
-                                    <h4 className="text-xl font-bold text-white mb-2">Թիմեր դեռ չկան</h4>
-                                    <p className="text-white/60">Ստեղծեք առաջին թիմը վերևի ձևի միջոցով</p>
-                                </div>
-                            ) : (
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    {filteredTeams.map((team) => (
-                                        <div 
-                                            key={team.id} 
-                                            className="bg-white/5 rounded-2xl p-6 border border-white/20 hover:border-white/40 transition-all"
-                                        >
-                                            <div className="flex items-start justify-between mb-4">
-                                                <div className="flex items-center gap-3">
-                                                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-2xl ${team.color}`}>
-                                                        {team.emoji}
-                                                    </div>
-                                                    <div>
-                                                        <h4 className="text-xl font-bold text-white">{team.name}</h4>
-                                                        <p className="text-white/60 text-sm flex items-center gap-1">
-                                                            <MapPin className="w-3 h-3" /> {team.department}
-                                                        </p>
-                                                    </div>
-                                                </div>
-                                                <button
-                                                    onClick={() => deleteTeam(team.id)}
-                                                    className="p-2 bg-red-500/20 hover:bg-red-500/30 text-red-300 rounded-lg transition-colors"
-                                                >
-                                                    <Trash2 className="w-5 h-5" />
-                                                </button>
-                                            </div>
-
-                                            <div className="mb-4">
-                                                <div className="text-white/80 text-sm mb-2">Խաղացողներ ({team.players.length})</div>
-                                                {team.players.length === 0 ? (
-                                                    <div className="text-center py-4 bg-white/5 rounded-xl">
-                                                        <p className="text-white/50">Ոչ մի խաղացող</p>
-                                                    </div>
-                                                ) : (
-                                                    <div className="space-y-2">
-                                                        {team.players.map(player => (
-                                                            <div 
-                                                                key={player.id} 
-                                                                className="flex items-center justify-between bg-white/5 p-3 rounded-lg"
-                                                            >
-                                                                <div className="flex items-center gap-3">
-                                                                    <div className="text-2xl">{player.avatar}</div>
-                                                                    <div>
-                                                                        <div className="text-white font-medium">{player.name}</div>
-                                                                        <div className="text-white/60 text-xs">{player.position}</div>
-                                                                    </div>
-                                                                </div>
-                                                                <div className="flex gap-1">
-                                                                    {team.captain?.id === player.id && (
-                                                                        <span className="px-2 py-1 bg-yellow-500/20 text-yellow-300 rounded text-xs">Կապիտան</span>
-                                                                    )}
-                                                                    <button
-                                                                        onClick={() => removePlayerFromTeam(team.id, player.id)}
-                                                                        className="p-1 hover:bg-red-500/20 rounded text-red-300"
-                                                                    >
-                                                                        <UserMinus className="w-4 h-4" />
-                                                                    </button>
-                                                                </div>
-                                                            </div>
-                                                        ))}
-                                                    </div>
-                                                )}
-                                            </div>
-
-                                            <div className="flex gap-2">
-                                                <button
-                                                    onClick={() => setEditingTeam(team)}
-                                                    className="flex-1 bg-gradient-to-r from-blue-500 to-cyan-600 hover:from-blue-600 hover:to-cyan-700 text-white py-2 rounded-lg transition-all transform hover:scale-105 flex items-center justify-center gap-2"
-                                                >
-                                                    <Edit className="w-4 h-4" />
-                                                    Կառավարել
-                                                </button>
-                                                {team.players.length > 0 && team.captain && (
-                                                    <button
-                                                        onClick={() => {
-                                                            const nonCaptain = team.players.find(p => p.id !== team.captain.id);
-                                                            if (nonCaptain) {
-                                                                setTeamCaptain(team.id, nonCaptain.id);
-                                                            }
-                                                        }}
-                                                        className="px-4 bg-gradient-to-r from-yellow-500 to-orange-600 hover:from-yellow-600 hover:to-orange-700 text-white py-2 rounded-lg transition-all transform hover:scale-105"
-                                                        title="Փոխել կապիտանին"
-                                                    >
-                                                        <Crown className="w-4 h-4" />
-                                                    </button>
-                                                )}
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            )}
-                        </div>
-
-                        {/* Кнопка перехода к управлению игроками */}
-                        <div className="flex gap-4">
-                            <button
-                                onClick={() => setGameState('playerSetup')}
-                                className="flex-1 bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 text-white text-lg font-bold py-4 rounded-2xl transition-all transform hover:scale-105 flex items-center justify-center gap-3"
-                            >
-                                <UserPlus className="w-6 h-6" />
-                                Կառավարել Խաղացողներին
-                            </button>
-                            <button
-                                onClick={startGameWithTeams}
-                                className="flex-1 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white text-lg font-bold py-4 rounded-2xl transition-all transform hover:scale-105 flex items-center justify-center gap-3"
-                            >
-                                <Play className="w-6 h-6" />
-                                Սկսել Խաղը
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        );
-    }
-
-    // PLAYER SETUP SCREEN
-    if (gameState === 'playerSetup') {
-        return (
-            <div className={`min-h-screen bg-gradient-to-br ${getThemeClasses()} p-4 overflow-y-auto`}>
-                <div className="max-w-6xl mx-auto py-8">
-                    <button
-                        onClick={() => {
-                            setGameState('teamSetup');
-                            if (soundEnabled) playClick();
-                        }}
-                        className="mb-6 text-white/80 hover:text-white flex items-center gap-2 transition-colors hover:scale-105"
-                    >
-                        ← Ետ թիմերին
-                    </button>
-
-                    <div className="bg-white/10 backdrop-blur-xl rounded-3xl p-8 border-2 border-white/20 shadow-2xl">
-                        <h2 className="text-4xl font-bold text-white mb-8 flex items-center gap-3">
-                            <User className="text-purple-400" />
-                            Խաղացողների Կառավարում
-                        </h2>
-
                         {/* Добавление нового игрока */}
-                        {showPlayerForm ? (
-                            <div className="mb-8 p-6 bg-gradient-to-r from-purple-900/20 to-pink-900/20 rounded-2xl border border-purple-500/30">
-                                <h3 className="text-2xl font-bold text-white mb-4 flex items-center gap-2">
-                                    <UserPlus className="text-purple-400" />
-                                    Ավելացնել Նոր Խաղացող
-                                </h3>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                                    <div>
-                                        <label className="block text-white/80 text-sm mb-2">Անուն Ազգանուն *</label>
-                                        <input
-                                            type="text"
-                                            value={newPlayerName}
-                                            onChange={(e) => setNewPlayerName(e.target.value)}
-                                            className="w-full bg-white/10 border border-white/20 rounded-lg px-4 py-3 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                                            placeholder="Օրինակ՝ Սարգիս Մարտիրոսյան"
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="block text-white/80 text-sm mb-2">Բաժին</label>
-                                        <input
-                                            type="text"
-                                            value={newPlayerDepartment}
-                                            onChange={(e) => setNewPlayerDepartment(e.target.value)}
-                                            className="w-full bg-white/10 border border-white/20 rounded-lg px-4 py-3 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                                            placeholder="Օրինակ՝ Ծրագրավորում"
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="block text-white/80 text-sm mb-2">Պաշտոն</label>
-                                        <input
-                                            type="text"
-                                            value={newPlayerPosition}
-                                            onChange={(e) => setNewPlayerPosition(e.target.value)}
-                                            className="w-full bg-white/10 border border-white/20 rounded-lg px-4 py-3 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                                            placeholder="Օրինակ՝ Senior Developer"
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="block text-white/80 text-sm mb-2">Էլ. փոստ</label>
-                                        <input
-                                            type="email"
-                                            value={newPlayerEmail}
-                                            onChange={(e) => setNewPlayerEmail(e.target.value)}
-                                            className="w-full bg-white/10 border border-white/20 rounded-lg px-4 py-3 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                                            placeholder="user@company.com"
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="block text-white/80 text-sm mb-2">Հեռախոս</label>
-                                        <input
-                                            type="tel"
-                                            value={newPlayerPhone}
-                                            onChange={(e) => setNewPlayerPhone(e.target.value)}
-                                            className="w-full bg-white/10 border border-white/20 rounded-lg px-4 py-3 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                                            placeholder="+374 77 123456"
-                                        />
+                        <div className="mb-8 p-6 bg-gradient-to-r from-purple-900/20 to-pink-900/20 rounded-2xl border border-purple-500/30">
+                            <h3 className="text-2xl font-bold text-white mb-4 flex items-center gap-2">
+                                <UserPlus className="text-purple-400" />
+                                Ավելացնել Նոր Խաղացող
+                            </h3>
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                                <div>
+                                    <label className="block text-white/80 text-sm mb-2">Խաղացողի Անուն *</label>
+                                    <input
+                                        type="text"
+                                        value={newPlayerName}
+                                        onChange={(e) => setNewPlayerName(e.target.value)}
+                                        className="w-full bg-white/10 border border-white/20 rounded-lg px-4 py-3 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                        placeholder="Օրինակ՝ Արամ"
+                                        maxLength={25}
+                                    />
+                                    <div className="text-white/40 text-xs mt-1 text-right">{newPlayerName.length}/25</div>
+                                </div>
+                                <div>
+                                    <label className="block text-white/80 text-sm mb-2">Ավատար</label>
+                                    <div className="flex gap-2 flex-wrap">
+                                        {playerAvatars.map((avatar, idx) => (
+                                            <button
+                                                key={idx}
+                                                onClick={() => setSelectedPlayerAvatar(idx)}
+                                                className={`p-3 rounded-lg transition-all transform ${selectedPlayerAvatar === idx ? 'ring-2 ring-white scale-110 bg-white/20' : 'hover:scale-105 bg-white/10'}`}
+                                                title={`Ավատար ${idx + 1}`}
+                                            >
+                                                <span className="text-2xl">{avatar}</span>
+                                            </button>
+                                        ))}
                                     </div>
                                 </div>
-                                <div className="flex gap-4">
+                                <div className="flex items-end">
                                     <button
-                                        onClick={addCustomPlayer}
-                                        className="flex-1 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold py-3 rounded-lg transition-all transform hover:scale-105"
+                                        onClick={addNewPlayer}
+                                        className="w-full bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 text-white font-bold py-3 rounded-lg transition-all transform hover:scale-105"
                                     >
                                         Ավելացնել Խաղացող
                                     </button>
-                                    <button
-                                        onClick={() => setShowPlayerForm(false)}
-                                        className="px-6 bg-gradient-to-r from-red-500/20 to-pink-500/20 hover:from-red-500/30 hover:to-pink-500/30 text-white font-bold py-3 rounded-lg transition-all"
-                                    >
-                                        Չեղարկել
-                                    </button>
                                 </div>
                             </div>
-                        ) : (
-                            <button
-                                onClick={() => setShowPlayerForm(true)}
-                                className="w-full mb-8 bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 text-white text-lg font-bold py-4 rounded-2xl transition-all transform hover:scale-105 flex items-center justify-center gap-3"
-                            >
-                                <UserPlus className="w-6 h-6" />
-                                Ավելացնել Նոր Խաղացող
-                            </button>
-                        )}
-
-                        {/* Поиск игроков */}
-                        <div className="mb-6">
-                            <div className="relative">
-                                <input
-                                    type="text"
-                                    value={playerSearchTerm}
-                                    onChange={(e) => setPlayerSearchTerm(e.target.value)}
-                                    className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-purple-500 pl-12"
-                                    placeholder="Որոնել խաղացողներ..."
-                                />
-                                <User className="absolute left-4 top-1/2 transform -translate-y-1/2 text-white/50 w-5 h-5" />
+                            <div className="text-white/60 text-sm">
+                                Խաղացողները կհայտնվեն աջ կողմում և կարող եք նրանց ավելացնել թիմերին
                             </div>
                         </div>
 
-                        {/* Список доступных игроков */}
-                        <div className="mb-8">
-                            <h3 className="text-2xl font-bold text-white mb-4">
-                                Բոլոր Խաղացողները ({filteredAvailablePlayers.length})
-                            </h3>
-                            
-                            {filteredAvailablePlayers.length === 0 ? (
-                                <div className="text-center py-12 bg-white/5 rounded-2xl border border-white/10">
-                                    <div className="text-6xl mb-4">👤</div>
-                                    <h4 className="text-xl font-bold text-white mb-2">Խաղացողներ չկան</h4>
-                                    <p className="text-white/60">Ավելացրեք նոր խաղացող վերևի ձևի միջոցով</p>
+                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                            {/* Доступные игроки */}
+                            <div className="lg:col-span-1">
+                                <div className="mb-4">
+                                    <div className="relative">
+                                        <input
+                                            type="text"
+                                            value={playerSearchTerm}
+                                            onChange={(e) => setPlayerSearchTerm(e.target.value)}
+                                            className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-purple-500 pl-12"
+                                            placeholder="Որոնել խաղացողներ..."
+                                        />
+                                        <User className="absolute left-4 top-1/2 transform -translate-y-1/2 text-white/50 w-5 h-5" />
+                                    </div>
                                 </div>
-                            ) : (
-                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                    {filteredAvailablePlayers.map((player) => (
-                                        <div 
-                                            key={player.id} 
-                                            className="bg-white/5 rounded-2xl p-4 border border-white/20 hover:border-white/40 transition-all"
-                                        >
-                                            <div className="flex items-start justify-between mb-3">
-                                                <div className="flex items-center gap-3">
-                                                    <div className="text-3xl">{player.avatar}</div>
-                                                    <div>
-                                                        <h4 className="text-lg font-bold text-white">{player.name}</h4>
-                                                        <p className="text-white/60 text-xs">{player.position}</p>
+
+                                <div className="bg-white/5 rounded-2xl p-4 border border-white/20">
+                                    <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                                        <Users className="text-green-400" />
+                                        Առկա Խաղացողներ ({filteredAvailablePlayers.length})
+                                    </h3>
+                                    
+                                    {filteredAvailablePlayers.length === 0 ? (
+                                        <div className="text-center py-8 bg-white/5 rounded-xl">
+                                            <div className="text-4xl mb-3">👤</div>
+                                            <h4 className="text-lg font-bold text-white mb-2">Խաղացողներ չկան</h4>
+                                            <p className="text-white/60 text-sm">Ավելացրեք խաղացողներ վերևի ձևի միջոցով</p>
+                                        </div>
+                                    ) : (
+                                        <div className="space-y-2 max-h-[400px] overflow-y-auto">
+                                            {filteredAvailablePlayers.map((player) => (
+                                                <div 
+                                                    key={player.id} 
+                                                    className="flex items-center justify-between bg-white/5 p-3 rounded-lg hover:bg-white/10 transition-all group"
+                                                >
+                                                    <div className="flex items-center gap-3">
+                                                        <div className="text-2xl">{player.avatar}</div>
+                                                        <div>
+                                                            <div className="text-white font-medium">{player.name}</div>
+                                                            <div className="text-white/60 text-xs">
+                                                                Խաղեր: {player.stats.gamesPlayed} • Միավոր: {player.stats.totalPoints}
+                                                            </div>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                                {player.id.startsWith('custom-') && (
                                                     <button
                                                         onClick={() => removePlayer(player.id)}
-                                                        className="p-1 hover:bg-red-500/20 rounded text-red-300"
+                                                        className="p-1 hover:bg-red-500/20 rounded text-red-300 opacity-0 group-hover:opacity-100 transition-opacity"
+                                                        title="Հեռացնել"
                                                     >
                                                         <Trash2 className="w-4 h-4" />
                                                     </button>
-                                                )}
-                                            </div>
-
-                                            <div className="space-y-2 text-sm mb-3">
-                                                <div className="flex items-center gap-2 text-white/70">
-                                                    <Briefcase className="w-3 h-3" />
-                                                    <span>{player.department}</span>
                                                 </div>
-                                                {player.email && (
-                                                    <div className="flex items-center gap-2 text-white/70">
-                                                        <Mail className="w-3 h-3" />
-                                                        <span className="truncate">{player.email}</span>
-                                                    </div>
-                                                )}
-                                                {player.phone && (
-                                                    <div className="flex items-center gap-2 text-white/70">
-                                                        <Phone className="w-3 h-3" />
-                                                        <span>{player.phone}</span>
-                                                    </div>
-                                                )}
-                                            </div>
-
-                                            <div className="flex items-center justify-between">
-                                                <div className="text-xs text-white/50">
-                                                    Խաղեր: {player.stats.gamesPlayed} • Հաղթանակներ: {player.stats.gamesWon}
-                                                </div>
-                                                <div className={`px-2 py-1 rounded text-xs ${player.isActive ? 'bg-green-500/20 text-green-300' : 'bg-red-500/20 text-red-300'}`}>
-                                                    {player.isActive ? 'Ակտիվ' : 'Անակտիվ'}
-                                                </div>
-                                            </div>
+                                            ))}
                                         </div>
-                                    ))}
+                                    )}
                                 </div>
-                            )}
-                        </div>
+                            </div>
 
-                        {/* Подсказка для добавления игроков в команды */}
-                        <div className="bg-gradient-to-r from-blue-900/20 to-cyan-900/20 rounded-xl p-4 border border-blue-500/30">
-                            <div className="flex items-start gap-3">
-                                <Users className="w-6 h-6 text-blue-400 mt-1" />
-                                <div>
-                                    <div className="text-blue-300 font-semibold mb-1">Ինչպես ավելացնել խաղացողներ թիմերին</div>
-                                    <div className="text-blue-400/80 text-sm">
-                                        1. Վերադարձեք "Թիմերի կառավարում" էջ <br />
-                                        2. Ընտրեք թիմը, որին ցանկանում եք ավելացնել խաղացողներ <br />
-                                        3. Օգտագործեք "Կառավարել" կոճակը խաղացողների ավելացման համար
+                            {/* Существующие команды */}
+                            <div className="lg:col-span-2">
+                                <div className="mb-4">
+                                    <div className="relative">
+                                        <input
+                                            type="text"
+                                            value={teamSearchTerm}
+                                            onChange={(e) => setTeamSearchTerm(e.target.value)}
+                                            className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-blue-500 pl-12"
+                                            placeholder="Որոնել թիմեր..."
+                                        />
+                                        <Hash className="absolute left-4 top-1/2 transform -translate-y-1/2 text-white/50 w-5 h-5" />
                                     </div>
                                 </div>
+
+                                <div className="bg-white/5 rounded-2xl p-4 border border-white/20">
+                                    <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                                        <Trophy className="text-yellow-400" />
+                                        Ընթացիկ Թիմեր ({filteredTeams.length})
+                                    </h3>
+                                    
+                                    {filteredTeams.length === 0 ? (
+                                        <div className="text-center py-12 bg-white/5 rounded-xl">
+                                            <div className="text-6xl mb-4">👥</div>
+                                            <h4 className="text-xl font-bold text-white mb-2">Թիմեր դեռ չկան</h4>
+                                            <p className="text-white/60">Ստեղծեք առաջին թիմը վերևի ձևի միջոցով</p>
+                                        </div>
+                                    ) : (
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            {filteredTeams.map((team) => (
+                                                <div 
+                                                    key={team.id} 
+                                                    className="bg-white/5 rounded-xl p-4 border border-white/20 hover:border-white/40 transition-all"
+                                                >
+                                                    <div className="flex items-start justify-between mb-3">
+                                                        <div className="flex items-center gap-3">
+                                                            <div className={`w-10 h-10 rounded-lg flex items-center justify-center text-xl ${team.color}`}>
+                                                                {team.emoji}
+                                                            </div>
+                                                            <div>
+                                                                <h4 className="text-lg font-bold text-white">{team.name}</h4>
+                                                                <p className="text-white/60 text-xs">
+                                                                    {team.players.length} խաղացող
+                                                                </p>
+                                                            </div>
+                                                        </div>
+                                                        <button
+                                                            onClick={() => deleteTeam(team.id)}
+                                                            className="p-2 bg-red-500/20 hover:bg-red-500/30 text-red-300 rounded-lg transition-colors"
+                                                            title="Ջնջել թիմը"
+                                                        >
+                                                            <Trash2 className="w-4 h-4" />
+                                                        </button>
+                                                    </div>
+
+                                                    <div className="mb-3">
+                                                        <div className="text-white/80 text-sm mb-2">Խաղացողներ</div>
+                                                        {team.players.length === 0 ? (
+                                                            <div className="text-center py-2 bg-white/5 rounded-lg">
+                                                                <p className="text-white/50 text-sm">Ոչ մի խաղացող</p>
+                                                            </div>
+                                                        ) : (
+                                                            <div className="space-y-1">
+                                                                {team.players.map(player => (
+                                                                    <div 
+                                                                        key={player.id} 
+                                                                        className="flex items-center justify-between bg-white/5 p-2 rounded"
+                                                                    >
+                                                                        <div className="flex items-center gap-2">
+                                                                            <div className="text-lg">{player.avatar}</div>
+                                                                            <div>
+                                                                                <div className="text-white text-sm">{player.name}</div>
+                                                                                {team.captain?.id === player.id && (
+                                                                                    <div className="text-yellow-400 text-xs flex items-center gap-1">
+                                                                                        <Crown className="w-2 h-2" /> Կապիտան
+                                                                                    </div>
+                                                                                )}
+                                                                            </div>
+                                                                        </div>
+                                                                        <button
+                                                                            onClick={() => removePlayerFromTeam(team.id, player.id)}
+                                                                            className="p-1 hover:bg-red-500/20 rounded text-red-300"
+                                                                            title="Հեռացնել թիմից"
+                                                                        >
+                                                                            <UserMinus className="w-3 h-3" />
+                                                                        </button>
+                                                                    </div>
+                                                                ))}
+                                                            </div>
+                                                        )}
+                                                    </div>
+
+                                                    <div className="space-y-2">
+                                                        <div className="text-white/80 text-sm">Ավելացնել խաղացողներ</div>
+                                                        <div className="flex flex-wrap gap-1">
+                                                            {filteredAvailablePlayers
+                                                                .filter(p => !team.players.some(tp => tp.id === p.id))
+                                                                .slice(0, 4)
+                                                                .map(player => (
+                                                                <button
+                                                                    key={player.id}
+                                                                    onClick={() => addPlayerToTeam(team.id, player.id)}
+                                                                    className="flex items-center gap-1 bg-white/10 hover:bg-white/20 text-white px-2 py-1 rounded text-sm transition-all"
+                                                                    title={`Ավելացնել ${player.name}`}
+                                                                >
+                                                                    <span>{player.avatar}</span>
+                                                                    <span className="truncate max-w-[60px]">{player.name}</span>
+                                                                    <Plus className="w-3 h-3" />
+                                                                </button>
+                                                            ))}
+                                                            {filteredAvailablePlayers.filter(p => !team.players.some(tp => tp.id === p.id)).length > 4 && (
+                                                                <div className="text-white/60 text-xs text-center w-full">
+                                                                    ...և {filteredAvailablePlayers.filter(p => !team.players.some(tp => tp.id === p.id)).length - 4} այլ
+                                                                </div>
+                                                            )}
+                                                        </div>
+
+                                                        {team.players.length > 0 && (
+                                                            <button
+                                                                onClick={() => {
+                                                                    if (team.players.length > 1) {
+                                                                        const currentCaptainIndex = team.players.findIndex(p => p.id === team.captain?.id);
+                                                                        const nextCaptainIndex = (currentCaptainIndex + 1) % team.players.length;
+                                                                        setTeamCaptain(team.id, team.players[nextCaptainIndex].id);
+                                                                    }
+                                                                }}
+                                                                className="w-full bg-gradient-to-r from-yellow-500/20 to-orange-500/20 hover:from-yellow-500/30 hover:to-orange-500/30 text-yellow-300 py-2 rounded text-sm transition-all flex items-center justify-center gap-2"
+                                                            >
+                                                                <Crown className="w-3 h-3" />
+                                                                Փոխել Կապիտանին
+                                                            </button>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Кнопка начала игры */}
+                        <div className="mt-8">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="bg-gradient-to-r from-blue-900/20 to-cyan-900/20 rounded-xl p-4 border border-blue-500/30">
+                                    <div className="flex items-center gap-3">
+                                        <Bell className="w-5 h-5 text-blue-400" />
+                                        <div>
+                                            <div className="text-blue-300 font-semibold">Պայմաններ խաղը սկսելու համար</div>
+                                            <div className="text-blue-400/80 text-sm">
+                                                • Առնվազն 2 թիմ <br />
+                                                • Ամեն թիմում առնվազն 1 խաղացող <br />
+                                                • Ընդհանուր առնվազն 4 խաղացող
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button
+                                    onClick={startGameWithTeams}
+                                    disabled={teams.length < 2 || teams.some(team => team.players.length === 0) || availablePlayers.length < 4}
+                                    className={`bg-gradient-to-r from-green-500 to-emerald-600 text-white text-xl font-bold py-4 rounded-2xl transition-all transform ${teams.length >= 2 && !teams.some(team => team.players.length === 0) && availablePlayers.length >= 4 ? 'hover:scale-105 hover:shadow-2xl' : 'opacity-50 cursor-not-allowed'} flex items-center justify-center gap-3`}
+                                >
+                                    <Play className="w-6 h-6" />
+                                    Սկսել Խաղը
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -2230,15 +1878,22 @@ const NewYearCharades = () => {
                             <div className="text-2xl">👥</div>
                             <div>
                                 <div className="text-white font-bold text-xl">{team?.players.length || 0} խաղացող</div>
-                                <div className="text-white/60 text-sm">{team?.department}</div>
+                                {team?.captain && (
+                                    <div className="text-white/80 text-sm flex items-center justify-center gap-1">
+                                        <Crown className="w-3 h-3 text-yellow-400" />
+                                        Կապիտան՝ {team.captain.name}
+                                    </div>
+                                )}
                             </div>
                         </div>
-                        {team?.captain && (
-                            <div className="flex items-center justify-center gap-2 text-white/80">
-                                <Crown className="w-4 h-4 text-yellow-400" />
-                                Կապիտան՝ {team.captain.name}
-                            </div>
-                        )}
+                        <div className="flex flex-wrap gap-2 justify-center">
+                            {team?.players.map(player => (
+                                <div key={player.id} className="flex items-center gap-1 bg-white/10 px-3 py-1 rounded-full">
+                                    <span>{player.avatar}</span>
+                                    <span className="text-white text-sm">{player.name}</span>
+                                </div>
+                            ))}
+                        </div>
                     </div>
 
                     <div className="grid grid-cols-3 gap-4 mb-8">
@@ -2258,22 +1913,6 @@ const NewYearCharades = () => {
                             <div className="text-white text-3xl font-bold">{streak}</div>
                         </div>
                     </div>
-
-                    {aiAssistant && team && (
-                        <div className="mb-6 p-4 bg-gradient-to-r from-purple-900/20 to-pink-900/20 rounded-xl border border-purple-500/30">
-                            <div className="flex items-center gap-3">
-                                <BrainCircuit className="w-6 h-6 text-purple-400" />
-                                <div className="text-left">
-                                    <div className="text-purple-300 font-semibold">AI Վերլուծություն</div>
-                                    <div className="text-purple-400/80 text-sm">
-                                        {team.efficiency > 80 ? 'Գերազանց արդյունավետություն' :
-                                         team.efficiency > 60 ? 'Լավ կատարում' :
-                                         'Կարող եք բարելավել հաջողությունը'}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    )}
 
                     <button
                         onClick={() => {
@@ -2342,7 +1981,8 @@ const NewYearCharades = () => {
                                 </div>
                                 <button
                                     onClick={() => useSpecialCard('joker')}
-                                    className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-4 py-2 rounded-lg text-sm transition-all hover:scale-105"
+                                    disabled={!teams[currentTeam]?.specialCards.joker || teams[currentTeam].specialCards.joker <= 0}
+                                    className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 disabled:from-gray-600 disabled:to-gray-700 disabled:cursor-not-allowed text-white px-4 py-2 rounded-lg text-sm transition-all hover:scale-105"
                                 >
                                     Հուշում ստանալ
                                 </button>
@@ -2405,7 +2045,7 @@ const NewYearCharades = () => {
                                 </div>
                             )}
                         </div>
-                        <div className="grid grid-cols-4 md:grid-cols-5 lg:grid-cols-10 gap-2">
+                        <div className="grid grid-cols-4 md:grid-cols-5 lg:grid-cols-8 gap-2">
                             {specialCardTypes.map(card => {
                                 const count = teams[currentTeam]?.specialCards[card.type] || 0;
                                 const canUse = count > 0;
@@ -2440,7 +2080,6 @@ const NewYearCharades = () => {
                         <button
                             onClick={() => {
                                 handleCorrect();
-                                if (soundEnabled) playCorrect();
                             }}
                             className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white text-2xl font-bold py-8 rounded-2xl shadow-xl transition-all transform hover:scale-105 active:scale-95 hover:shadow-2xl flex items-center justify-center gap-3 group"
                         >
@@ -2453,7 +2092,6 @@ const NewYearCharades = () => {
                         <button
                             onClick={() => {
                                 handleSkip();
-                                if (soundEnabled) playIncorrect();
                             }}
                             className="bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700 text-white text-2xl font-bold py-8 rounded-2xl shadow-xl transition-all transform hover:scale-105 active:scale-95 hover:shadow-2xl flex items-center justify-center gap-3"
                         >
@@ -2576,7 +2214,7 @@ const NewYearCharades = () => {
                             ))}
                         </div>
 
-                        {/* Statistics and AI Analysis */}
+                        {/* Statistics */}
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
                             <div className="bg-white/10 rounded-2xl p-6 border border-white/20">
                                 <h3 className="text-white font-bold text-xl mb-4 flex items-center gap-2">
