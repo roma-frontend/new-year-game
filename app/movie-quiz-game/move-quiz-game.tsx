@@ -120,7 +120,7 @@ const MovieQuizGame = () => {
             points: 250,
             media: {
                 type: 'youtube',
-                url: 'https://www.youtube.com/embed/1Ml3nqjkZqE',
+                url: 'https://www.youtube.com/watch?v=sYjp29cd53g&list=PLyYWZDMWCCk71sHITT-GYYNL2B77B17Wu&index=9',
             },
             funFact: 'Երաժշտությունը գրվել է հայտնի կոմպոզիտոր Ջոն Ուիլյամսի կողմից',
             category: 'hollywood',
@@ -136,7 +136,7 @@ const MovieQuizGame = () => {
             points: 350,
             media: {
                 type: 'youtube',
-                url: 'https://www.youtube.com/embed/RSwa8KjOJ8I',
+                url: 'https://www.youtube.com/watch?v=ucIW84D_EI0',
             },
             funFact: 'Տիմ Ալենի պարը դարձել է կուլտային տեսարան',
             category: 'comedy',
@@ -152,7 +152,7 @@ const MovieQuizGame = () => {
             points: 200,
             media: {
                 type: 'youtube',
-                url: 'https://www.youtube.com/embed/mo_Bm-FC1Ms',
+                url: 'https://www.youtube.com/watch?v=dZFr0Eji6gc&list=RDdZFr0Eji6gc&start_radio=1',
             },
             funFact: 'Այս մուլտֆիլմի երգերը դասական են դարձել նոր տարվա սեղանի ժամանակ',
             category: 'soviet',
@@ -184,7 +184,7 @@ const MovieQuizGame = () => {
             points: 200,
             media: {
                 type: 'youtube',
-                url: 'https://www.youtube.com/embed/E8gmARGvPlI',
+                url: 'https://www.youtube.com/watch?v=KhqNTjbQ71A&list=RDKhqNTjbQ71A&start_radio=1',
             },
             funFact: 'Այս երգը վաճառվել է ավելի քան 1.8 միլիոն օրինակով',
             category: 'music',
