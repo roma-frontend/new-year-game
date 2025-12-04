@@ -257,10 +257,44 @@ const MovieQuizGame = () => {
     ];
 
     const [shuffledQuestions, setShuffledQuestions] = useState<Question[]>(questions);
+    const [answerOptions, setAnswerOptions] = useState<string[]>([]);
 
     const timerRef = useRef<NodeJS.Timeout | null>(null);
     const audioRef = useRef<HTMLAudioElement>(null);
-    const bgMusicRef = useRef<HTMLAudioElement>(null);
+    const clickSoundRef = useRef<HTMLAudioElement>(null);
+    const correctSoundRef = useRef<HTMLAudioElement>(null);
+    const incorrectSoundRef = useRef<HTMLAudioElement>(null);
+    const timerSoundRef = useRef<HTMLAudioElement>(null);
+    const winSoundRef = useRef<HTMLAudioElement>(null);
+    const loseSoundRef = useRef<HTMLAudioElement>(null);
+
+    // Инициализация вариантов ответов при загрузке вопроса
+    useEffect(() => {
+        if (shuffledQuestions.length > 0 && currentQuestion < shuffledQuestions.length) {
+            generateAnswerOptions();
+        }
+    }, [currentQuestion, shuffledQuestions]);
+
+    const generateAnswerOptions = () => {
+        const currentQuestionObj = shuffledQuestions[currentQuestion];
+        if (!currentQuestionObj) return;
+
+        // Получаем все ответы, кроме текущего
+        const otherAnswers = shuffledQuestions
+            .filter(q => q.id !== currentQuestionObj.id)
+            .map(q => q.answer);
+
+        // Выбираем 3 случайных неправильных ответа
+        const shuffledWrongAnswers = [...otherAnswers]
+            .sort(() => Math.random() - 0.5)
+            .slice(0, 3);
+
+        // Создаем массив из 4 вариантов (3 неправильных + 1 правильный)
+        const options = [...shuffledWrongAnswers, currentQuestionObj.answer];
+
+        // Перемешиваем варианты
+        setAnswerOptions(options.sort(() => Math.random() - 0.5));
+    };
 
     // Цветовые опции для команд
     const colorOptions = [
@@ -282,10 +316,12 @@ const MovieQuizGame = () => {
 
     useEffect(() => {
         if (config.shuffleQuestions) {
-            setShuffledQuestions([...questions].sort(() => Math.random() - 0.5));
+            const shuffled = [...questions].sort(() => Math.random() - 0.5);
+            setShuffledQuestions(shuffled);
         } else {
             setShuffledQuestions(questions);
         }
+        setCurrentQuestion(0);
     }, [config.shuffleQuestions]);
 
     const startGame = () => {
@@ -304,24 +340,50 @@ const MovieQuizGame = () => {
         setTimeLeft(config.timerDuration);
         setActiveTeam(0);
         setCurrentQuestion(0);
+        setShowAnswer(false);
+        setSelectedAnswer('');
+        setHintUsed(false);
+        generateAnswerOptions();
         playSound('levelup');
     };
 
-    const playSound = (type: 'start' | 'correct' | 'wrong' | 'timeup' | 'hint' | 'levelup') => {
-        if (!config.soundEnabled) return;
+    const playSound = (type: 'start' | 'correct' | 'wrong' | 'timeup' | 'hint' | 'levelup' | 'click' | 'card' | 'special' | 'achievement') => {
+        if (!config.soundEnabled || !soundOn) return;
 
-        const sounds = {
-            start: 'https://assets.mixkit.co/sfx/preview/mixkit-game-show-intro-music-687.mp3',
-            correct: 'https://assets.mixkit.co/sfx/preview/mixkit-winning-chimes-2015.mp3',
-            wrong: 'https://assets.mixkit.co/sfx/preview/mixkit-wrong-answer-fail-notification-946.mp3',
-            timeup: 'https://assets.mixkit.co/sfx/preview/mixkit-show-off-timer-889.mp3',
-            hint: 'https://assets.mixkit.co/sfx/preview/mixkit-magic-sparkles-300.mp3',
-            levelup: 'https://assets.mixkit.co/sfx/preview/mixkit-winning-trumpet-2018.mp3'
-        };
+        try {
+            let audioElement: HTMLAudioElement | null = null;
 
-        if (audioRef.current) {
-            audioRef.current.src = sounds[type];
-            audioRef.current.play().catch(e => console.log("Audio play failed:", e));
+            switch (type) {
+                case 'click':
+                    audioElement = clickSoundRef.current;
+                    break;
+                case 'correct':
+                    audioElement = correctSoundRef.current;
+                    break;
+                case 'wrong':
+                    audioElement = incorrectSoundRef.current;
+                    break;
+                case 'timeup':
+                    audioElement = timerSoundRef.current;
+                    break;
+                case 'start':
+                case 'levelup':
+                case 'achievement':
+                    audioElement = winSoundRef.current;
+                    break;
+                case 'hint':
+                case 'card':
+                case 'special':
+                    audioElement = winSoundRef.current; // Используем win звук для подсказок
+                    break;
+            }
+
+            if (audioElement) {
+                audioElement.currentTime = 0;
+                audioElement.play().catch(e => console.log("Audio play failed:", e));
+            }
+        } catch (error) {
+            console.log("Sound error:", error);
         }
     };
 
@@ -354,8 +416,13 @@ const MovieQuizGame = () => {
         if (gamePhase === 'playing' && timeLeft > 0 && isPlaying) {
             timerRef.current = setTimeout(() => {
                 setTimeLeft(timeLeft - 1);
+
+                // Воспроизводим звук таймера каждую секунду при последних 10 секундах
+                if (timeLeft <= 10 && config.soundEnabled && soundOn) {
+                    playSound('timeup');
+                }
             }, 1000);
-        } else if (timeLeft === 0) {
+        } else if (timeLeft === 0 && isPlaying) {
             handleTimeUp();
         }
 
@@ -414,60 +481,39 @@ const MovieQuizGame = () => {
         playSound('wrong');
     };
 
-    const updateTeamMember = (teamId: string, index: number, value: string) => {
-        setTeams(teams.map(team => {
-            if (team.id === teamId) {
-                const newMembers = [...team.members];
-                newMembers[index] = value;
-                return { ...team, members: newMembers };
-            }
-            return team;
-        }));
-    };
-
-    const addMemberToTeam = (teamId: string) => {
-        setTeams(teams.map(team =>
-            team.id === teamId
-                ? { ...team, members: [...team.members, ''] }
-                : team
-        ));
-    };
-
-    const removeMemberFromTeam = (teamId: string, index: number) => {
-        setTeams(teams.map(team => {
-            if (team.id === teamId && team.members.length > 1) {
-                const newMembers = team.members.filter((_, i) => i !== index);
-                return { ...team, members: newMembers };
-            }
-            return team;
-        }));
-    };
-
     // ========== ИГРОВАЯ ЛОГИКА ==========
 
     const handleAnswer = (answer: string) => {
+        if (showAnswer) return; // Предотвращаем повторный выбор
+
         setSelectedAnswer(answer);
-        const isCorrect = answer === shuffledQuestions[currentQuestion].answer;
+        playSound('click');
 
-        if (isCorrect) {
-            const newTeams = [...teams];
-            let points = shuffledQuestions[currentQuestion].points;
+        const currentQuestionObj = shuffledQuestions[currentQuestion];
+        const isCorrect = answer === currentQuestionObj.answer;
 
-            if (config.pointsMultiplier) {
-                if (timeLeft > config.timerDuration * 0.66) points = Math.floor(points * 1.5);
-                else if (timeLeft > config.timerDuration * 0.33) points = Math.floor(points * 1.2);
+        // Задержка перед показом ответа для драматизма
+        setTimeout(() => {
+            setShowAnswer(true);
+            setIsPlaying(false);
+
+            if (isCorrect) {
+                const newTeams = [...teams];
+                let points = currentQuestionObj.points;
+
+                if (config.pointsMultiplier) {
+                    if (timeLeft > config.timerDuration * 0.66) points = Math.floor(points * 1.5);
+                    else if (timeLeft > config.timerDuration * 0.33) points = Math.floor(points * 1.2);
+                }
+
+                newTeams[activeTeam].score += points;
+                setTeams(newTeams);
+                playSound('correct');
+                launchConfetti();
+            } else {
+                playSound('wrong');
             }
-
-            newTeams[activeTeam].score += points;
-            setTeams(newTeams);
-            playSound('correct');
-            launchConfetti();
-        } else {
-            playSound('wrong');
-        }
-
-        setShowAnswer(true);
-        setIsPlaying(false);
+        }, 500);
     };
 
     const handleTimeUp = () => {
@@ -477,6 +523,8 @@ const MovieQuizGame = () => {
     };
 
     const nextQuestion = () => {
+        playSound('click');
+
         if (currentQuestion < shuffledQuestions.length - 1) {
             setCurrentQuestion(currentQuestion + 1);
             setShowAnswer(false);
@@ -485,13 +533,14 @@ const MovieQuizGame = () => {
             setIsPlaying(true);
             setHintUsed(false);
             setActiveTeam((prev) => (prev + 1) % teams.length);
+            generateAnswerOptions();
         } else {
             endGame();
         }
     };
 
     const useHint = () => {
-        if (!hintUsed && config.enableHints) {
+        if (!hintUsed && config.enableHints && !showAnswer) {
             setHintUsed(true);
             playSound('hint');
             const newTeams = [...teams];
@@ -504,7 +553,7 @@ const MovieQuizGame = () => {
         setGamePhase('results');
         setIsPlaying(false);
         launchConfetti();
-        playSound('levelup');
+        playSound('achievement');
     };
 
     // ========== КОМПОНЕНТЫ МЕДИА ==========
@@ -540,19 +589,6 @@ const MovieQuizGame = () => {
                     </div>
                 );
         }
-    };
-
-    const getRandomAnswers = (correctAnswer: string) => {
-        const allAnswers = shuffledQuestions
-            .filter(q => q.id !== shuffledQuestions[currentQuestion].id)
-            .map(q => q.answer);
-
-        const shuffled = [...allAnswers]
-            .sort(() => 0.5 - Math.random())
-            .slice(0, 3);
-
-        const answers = [...shuffled, correctAnswer];
-        return answers.sort(() => 0.5 - Math.random());
     };
 
     // ========== РЕНДЕРИНГ ==========
@@ -598,14 +634,24 @@ const MovieQuizGame = () => {
                 ))}
             </div>
 
+            {/* Звуковые элементы */}
             <audio ref={audioRef} className="hidden" />
+            <audio ref={clickSoundRef} src="/sounds/click.mp3" preload="auto" />
+            <audio ref={correctSoundRef} src="/sounds/correct.mp3" preload="auto" />
+            <audio ref={incorrectSoundRef} src="/sounds/incorrect.mp3" preload="auto" />
+            <audio ref={timerSoundRef} src="/sounds/timer.mp3" preload="auto" />
+            <audio ref={winSoundRef} src="/sounds/win.mp3" preload="auto" />
+            <audio ref={loseSoundRef} src="/sounds/lose.mp3" preload="auto" />
 
             {/* Main content */}
             <div className="relative z-10 container mx-auto px-4 py-8">
                 {/* Header */}
                 <div className="flex justify-between items-center mb-12">
                     <Button
-                        onClick={() => router.push('/')}
+                        onClick={() => {
+                            playSound('click');
+                            router.push('/');
+                        }}
                         className="bg-white/10 backdrop-blur-lg hover:bg-white/20 border border-white/20 hover:scale-105 transition-all group"
                     >
                         <span className="group-hover:-translate-x-1 transition-transform">←</span>
@@ -614,7 +660,10 @@ const MovieQuizGame = () => {
 
                     <div className="flex items-center gap-4">
                         <Button
-                            onClick={() => setSoundOn(!soundOn)}
+                            onClick={() => {
+                                setSoundOn(!soundOn);
+                                playSound('click');
+                            }}
                             className="bg-white/10 backdrop-blur-lg hover:bg-white/20 border border-white/20 hover:scale-105 transition-transform"
                             size="icon"
                         >
@@ -660,15 +709,15 @@ const MovieQuizGame = () => {
                         <div className="w-full max-w-6xl">
                             <Tabs defaultValue="teams" className="w-full">
                                 <TabsList className="grid grid-cols-3 mb-8 bg-white/10 backdrop-blur-md border border-white/20">
-                                    <TabsTrigger value="teams" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500">
+                                    <TabsTrigger value="teams" className="text-white data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500">
                                         <UsersIcon className="w-4 h-4 mr-2" />
                                         Թիմեր
                                     </TabsTrigger>
-                                    <TabsTrigger value="settings" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-cyan-500">
+                                    <TabsTrigger value="settings" className="text-white data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-cyan-500">
                                         <Settings className="w-4 h-4 mr-2" />
                                         Կարգավորումներ
                                     </TabsTrigger>
-                                    <TabsTrigger value="rules" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-green-500 data-[state=active]:to-emerald-500">
+                                    <TabsTrigger value="rules" className="text-white data-[state=active]:bg-gradient-to-r data-[state=active]:from-green-500 data-[state=active]:to-emerald-500">
                                         <Target className="w-4 h-4 mr-2" />
                                         Կանոններ
                                     </TabsTrigger>
@@ -1051,7 +1100,7 @@ const MovieQuizGame = () => {
                                     {teams.length >= 2 ? (
                                         <>
                                             <Rocket className="w-10 h-10 mr-4 animate-bounce" />
-                                            🚀 ՍԿՍԵԼ ԽԱՂԸ
+                                            🚀 Սկսել խաղը
                                             <Sparkles className="w-10 h-10 ml-4 animate-spin" />
                                         </>
                                     ) : (
@@ -1155,7 +1204,7 @@ const MovieQuizGame = () => {
                                 className="px-24 py-10 text-5xl font-black rounded-3xl bg-gradient-to-r from-green-600 via-emerald-600 to-green-600 hover:from-green-500 hover:via-emerald-500 hover:to-green-500 hover:scale-110 transition-all duration-500 animate-bounce-slow shadow-2xl shadow-green-500/30"
                             >
                                 <Lightning className="w-12 h-12 mr-6 animate-pulse" />
-                                🚀 ՍԿՍԵԼ
+                                🚀 Սկսել
                                 <Play className="w-12 h-12 ml-6" />
                             </Button>
 
@@ -1298,7 +1347,7 @@ const MovieQuizGame = () => {
 
                             {/* Answers */}
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl mx-auto">
-                                {getRandomAnswers(shuffledQuestions[currentQuestion].answer).map((answer, idx) => (
+                                {answerOptions.map((answer, idx) => (
                                     <Button
                                         key={idx}
                                         onClick={() => handleAnswer(answer)}
@@ -1380,12 +1429,12 @@ const MovieQuizGame = () => {
                                     >
                                         {currentQuestion < shuffledQuestions.length - 1 ? (
                                             <>
-                                                ՀԱՋՈՐԴ ՀԱՐՑԸ
+                                                Հաջորդ հարցը
                                                 <SkipForward className="w-8 h-8 ml-4 group-hover:translate-x-2 transition-transform" />
                                             </>
                                         ) : (
                                             <>
-                                                ՏԵՍՆԵԼ ԱՐԴՅՈՒՆՔՆԵՐԸ
+                                                Տեսնել արդյունքները
                                                 <Trophy className="w-8 h-8 ml-4 animate-spin" />
                                             </>
                                         )}
@@ -1403,7 +1452,7 @@ const MovieQuizGame = () => {
                         <div className="text-center space-y-8 max-w-4xl">
                             <div className="relative">
                                 <h1 className="text-8xl md:text-9xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-orange-400 to-red-400 animate-gradient-slow">
-                                    🏆 ՀԱՂԹՈՂ
+                                    🏆 Հաղթող
                                 </h1>
                                 <div className="absolute -top-6 -right-6 text-6xl animate-bounce">🎊</div>
                                 <div className="absolute -bottom-6 -left-6 text-6xl animate-spin">✨</div>
