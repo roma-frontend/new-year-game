@@ -27,6 +27,7 @@ interface GeoQuestion {
     answer: string;
     country: string;
     continent: string;
+    length?: number;
     points: number;
     media: {
         type: 'image' | 'map' | 'streetview' | 'video' | 'panorama';
@@ -409,6 +410,335 @@ const GeoMysteryGame = () => {
             funFact: 'Մետրոպոլիս տարածքի բնակչությունը 37 միլիոն է',
             difficulty: 'hard'
         },
+        {
+            id: 19,
+            type: 'landmark',
+            title: '🗿 Այս հնագույն քարի կերպարը',
+            hint: 'Հեռավոր կղզի, հսկայական քարե արձաններ',
+            answer: 'Զատկի կղզու մոհաի',
+            country: 'Չիլի',
+            continent: 'Հարավային Ամերիկա',
+            points: 450,
+            media: {
+                type: 'image',
+                url: 'https://media.istockphoto.com/id/1149848567/photo/dusk-over-moa-of-ahu-ko-te-riku-easter-island-chile.jpg?s=1024x1024&w=is&k=20&c=Nke7H2kfHmGOMJXTN08rZr8CZkS2234u64YqCKX-NRI='
+            },
+            funFact: 'Կերտվել են 1250-1500 թվականներին, յուրաքանչյուրի քաշը մինչև 82 տոննա է',
+            difficulty: 'hard'
+        },
+        {
+            id: 20,
+            type: 'landmark',
+            title: '⛰️ Այս կանյոնի անունը',
+            hint: 'ԱՄՆ, Կոլորադո գետ, աշխարհի ամենախորը կանյոններից մեկը',
+            answer: 'Մեծ Կանյոն',
+            country: 'ԱՄՆ',
+            continent: 'Հյուսիսային Ամերիկա',
+            points: 400,
+            media: {
+                type: 'image',
+                url: 'https://images.unsplash.com/photo-1578510444376-54d40464b4c3?q=80&w=1332&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
+            },
+            funFact: 'Մոտ 6 միլիոն տարեկան է, խորությունը մինչև 1857 մետր',
+            difficulty: 'medium',
+            length: 446
+        },
+        {
+            id: 21,
+            type: 'flag',
+            title: '🇨🇦 Այս դրոշը պատկանում է',
+            hint: 'Կարմիր տերև կենտրոնում, սպիտակ ֆոն',
+            answer: 'Կանադա',
+            country: 'Կանադա',
+            continent: 'Հյուսիսային Ամերիկա',
+            points: 300,
+            media: {
+                type: 'image',
+                url: 'https://plus.unsplash.com/premium_photo-1674591172352-0af9308f0dac?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
+            },
+            funFact: 'Դրոշի վրայի տերևը շաքարի թխկու տերև է, որը Կանադայի խորհրդանիշն է',
+            difficulty: 'easy'
+        },
+        {
+            id: 22,
+            type: 'culture',
+            title: '🎎 Ո՞ր երկրի ավանդական տարազն է',
+            hint: 'Արևելյան Ասիա, կիմոնո, ծիրանածաղիկներ',
+            answer: 'Ճապոնիա',
+            country: 'Ճապոնիա',
+            continent: 'Ասիա',
+            points: 350,
+            media: {
+                type: 'image',
+                url: 'https://images.unsplash.com/photo-1514825918313-19e9a7963735?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
+            },
+            funFact: 'Կիմոնոն բառացիորեն նշանակում է "հագնելու բան"',
+            difficulty: 'medium'
+        },
+        {
+            id: 23,
+            type: 'satellite',
+            title: '🛰️ Այս թերակղզու արբանյակային պատկերը',
+            hint: 'Արբանյակային պատկերում նման է կոշիկի',
+            answer: 'Իտալիա',
+            country: 'Իտալիա',
+            continent: 'Եվրոպա',
+            points: 400,
+            media: {
+                type: 'image',
+                url: 'https://plus.unsplash.com/premium_photo-1712638009487-c6629ab57674?q=80&w=1332&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
+            },
+            funFact: 'Իտալիան հաճախ անվանում են "կոշիկ", նրա տեսքի պատճառով',
+            difficulty: 'hard'
+        },
+        {
+            id: 24,
+            type: 'landmark',
+            title: '🏰 Այս միջնադարյան ամրոցը',
+            hint: 'Գերմանիա, գտնվում է լեռան վրա, հայտնի հեքիաթային ամրոց',
+            answer: 'Նոյշվանշտայն ամրոց',
+            country: 'Գերմանիա',
+            continent: 'Եվրոպա',
+            points: 450,
+            media: {
+                type: 'image',
+                url: 'https://images.unsplash.com/photo-1658040204976-1084965b8fbb?q=80&w=1074&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
+            },
+            funFact: 'Ուոլթ Դիսնեյի համար ոգեշնչման աղբյուր է հանդիսացել Սպիտաթուշի մասին մուլտֆիլմի համար',
+            difficulty: 'hard',
+            year: 1869
+        },
+        {
+            id: 25,
+            type: 'climate',
+            title: '🌡️ Ո՞ր երկիրն է այս կլիմայական գոտում',
+            hint: 'Աշխարհի ամենաչոր տարածք, չորացած լիճ',
+            answer: 'Ատակամա անապատ (Չիլի)',
+            country: 'Չիլի',
+            continent: 'Հարավային Ամերիկա',
+            points: 450,
+            media: {
+                type: 'image',
+                url: 'https://plus.unsplash.com/premium_photo-1700566982349-e0884c479f31?q=80&w=1169&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
+            },
+            funFact: 'Աշխարհի ամենաչոր անապատը, որտեղ տեղումներ չեն գրանցվել 400 տարի',
+            difficulty: 'expert'
+        },
+        {
+            id: 26,
+            type: 'map',
+            title: '🗺️ Ո՞ր երկրի ուրվագիծն է',
+            hint: 'Կղզի պետություն, կենգուրու և էմու թռչուն դրոշի վրա',
+            answer: 'Ավստրալիա',
+            country: 'Ավստրալիա',
+            continent: 'Ավստրալիա',
+            points: 350,
+            media: {
+                type: 'map',
+                url: 'https://plus.unsplash.com/premium_photo-1669387726956-cf8b173dd728?q=80&w=1228&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
+            },
+            funFact: 'Աշխարհի միակ մայրցամաքը, որը միաժամանակ պետություն է',
+            difficulty: 'medium',
+            area: 7692024
+        },
+        {
+            id: 27,
+            type: 'landmark',
+            title: '🕍 Այս մզկիթի անունը',
+            hint: 'Թուրքիա, վեց մինարեթներ, կապույտ սալիկներ',
+            answer: 'Սուլթան Ահմեդ մզկիթ (Կապույտ մզկիթ)',
+            country: 'Թուրքիա',
+            continent: 'Ասիա',
+            points: 400,
+            media: {
+                type: 'image',
+                url: 'https://images.unsplash.com/photo-1621847396754-e8d2e02e1c5c?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
+            },
+            funFact: 'Պարունակում է ավելի քան 20,000 ձեռքով պատրաստված կերամիկական սալիկ',
+            difficulty: 'hard',
+            year: 1616
+        },
+        {
+            id: 28,
+            type: 'cityscape',
+            title: '🏙️ Ո՞ր մայրաքաղաքը հայտնի է իր բազմագույն տներով',
+            hint: 'Հյուսիսային Եվրոպա, կանալներ, գոտիկային տներ',
+            answer: 'Ամստերդամ',
+            country: 'Նիդերլանդներ',
+            continent: 'Եվրոպա',
+            points: 350,
+            media: {
+                type: 'image',
+                url: 'https://plus.unsplash.com/premium_photo-1697730255443-c6904e521d94?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
+            },
+            funFact: 'Քաղաքը կառուցված է 90 կղզիների վրա, որոնք միացված են ավելի քան 1000 կամուրջներով',
+            difficulty: 'medium'
+        },
+        {
+            id: 29,
+            type: 'landmark',
+            title: '🌋 Այս գործող հրաբուխը',
+            hint: 'Իտալիա, Եվրոպայի միակ գործող հրաբուխը',
+            answer: 'Վեզուվ հրաբուխ',
+            country: 'Իտալիա',
+            continent: 'Եվրոպա',
+            points: 450,
+            media: {
+                type: 'image',
+                url: 'https://images.unsplash.com/photo-1657635141731-3f3811d030b8?q=80&w=1171&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
+            },
+            funFact: '79 թվականին ոչնչացրել է Պոմպեյ և Հերկուլանում քաղաքները',
+            difficulty: 'hard',
+            height: 1281
+        },
+        {
+            id: 30,
+            type: 'flag',
+            title: '🇧🇷 Այս երկրի դրոշը',
+            hint: 'Կանաչ ֆոն, դեղին ռոմբուս, կապույտ գունդ',
+            answer: 'Բրազիլիա',
+            country: 'Բրազիլիա',
+            continent: 'Հարավային Ամերիկա',
+            points: 300,
+            media: {
+                type: 'image',
+                url: 'https://plus.unsplash.com/premium_photo-1674591173482-ffb087662b4d?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
+            },
+            funFact: 'Դրոշի վրայի աստղերը պատկերում են երկնքի տեսարանը Ռիո դե Ժանեյրոյից 1889 թվականի նոյեմբերի 15-ին',
+            difficulty: 'medium'
+        },
+        {
+            id: 31,
+            type: 'culture',
+            title: '🕌 Այս ճարտարապետական համալիրը',
+            hint: 'Հնդկաստան, սպիտակ մարմարից, սիրո հուշարձան',
+            answer: 'Տաջ Մահալ',
+            country: 'Հնդկաստան',
+            continent: 'Ասիա',
+            points: 500,
+            media: {
+                type: 'image',
+                url: 'https://images.unsplash.com/photo-1564507592333-c60657eea523?q=80&w=1171&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
+            },
+            funFact: 'Կառուցվել է 22 տարվա ընթացքում 20,000 աշխատողների կողմից',
+            difficulty: 'expert',
+            year: 1653
+        },
+        {
+            id: 32,
+            type: 'satellite',
+            title: '🛰️ Այս առեղծվածային գծերը',
+            hint: 'Պերուի անապատ, հսկայական երկրաչափական գծեր',
+            answer: 'Նասկայի գծեր',
+            country: 'Պերու',
+            continent: 'Հարավային Ամերիկա',
+            points: 500,
+            media: {
+                type: 'image',
+                url: 'https://images.unsplash.com/photo-1669092557499-093cb88dc249?q=80&w=1333&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
+            },
+            funFact: 'Ստեղծվել են 500 տարի մ.թ.ա. և տեսանելի են միայն բարձրությունից',
+            difficulty: 'expert'
+        },
+        {
+            id: 33,
+            type: 'landmark',
+            title: '🌉 Այս կախովի կամուրջը',
+            hint: 'ԱՄՆ, Սան Ֆրանցիսկո, նարնջագույն',
+            answer: 'Ոսկե դարպասների կամուրջ',
+            country: 'ԱՄՆ',
+            continent: 'Հյուսիսային Ամերիկա',
+            points: 400,
+            media: {
+                type: 'image',
+                url: 'https://images.unsplash.com/photo-1521747116042-5a810fda9664?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
+            },
+            funFact: '1937 թվականին կառուցված ամենաերկար կախովի կամուրջն էր աշխարհում',
+            difficulty: 'medium',
+            length: 2737
+        },
+        {
+            id: 34,
+            type: 'climate',
+            title: '🌀 Այս երկիրը հայտնի է մուսոնային կլիմայով',
+            hint: 'Հարավային Ասիա, աշխարհի ամենաբնակեցված երկրներից',
+            answer: 'Հնդկաստան',
+            country: 'Հնդկաստան',
+            continent: 'Ասիա',
+            points: 350,
+            media: {
+                type: 'image',
+                url: 'https://images.unsplash.com/photo-1661868678317-13067cfbb00d?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
+            },
+            funFact: 'Տարեկան մուսոնային անձրևները կարող են հասնել 11,000 մմ-ի',
+            difficulty: 'medium'
+        },
+        {
+            id: 35,
+            type: 'cityscape',
+            title: '🌇 Այս ժամանակակից քաղաքի պատկերը',
+            hint: 'Արաբական թերակղզի, աշխարհի ամենաբարձր շենքը',
+            answer: 'Դուբայ',
+            country: 'Արաբական Միացյալ Էմիրություններ',
+            continent: 'Ասիա',
+            points: 450,
+            media: {
+                type: 'image',
+                url: 'https://images.unsplash.com/photo-1661630804516-10393c1bb0a8?q=80&w=1228&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
+            },
+            funFact: 'Բուրջ Խալիֆան աշխարհի ամենաբարձր շենքն է՝ 828 մետր բարձրությամբ',
+            difficulty: 'hard'
+        },
+        {
+            id: 36,
+            type: 'landmark',
+            title: '🏰 Այս գոթական տաճարը',
+            hint: 'Ֆրանսիա, Նոտր Դամ, հայտնի վեպի գործողությունների վայր',
+            answer: 'Նոտր Դամ տաճար (Փարիզ)',
+            country: 'Ֆրանսիա',
+            continent: 'Եվրոպա',
+            points: 400,
+            media: {
+                type: 'image',
+                url: 'https://images.unsplash.com/photo-1644603100611-6df3661890cf?q=80&w=1167&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
+            },
+            funFact: 'Շինարարությունը տևել է ավելի քան 200 տարի (1163-1345)',
+            difficulty: 'hard',
+            year: 1345
+        },
+        {
+            id: 37,
+            type: 'map',
+            title: '🗺️ Ո՞ր երկրի ուրվագիծն է',
+            hint: 'Պատանի պետություն, Կովկասյան լեռներ',
+            answer: 'Վրաստան',
+            country: 'Վրաստան',
+            continent: 'Ասիա',
+            points: 300,
+            media: {
+                type: 'map',
+                url: 'https://plus.unsplash.com/premium_photo-1713364681470-b8165888f31a?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
+            },
+            funFact: 'Կարծիք կա, որ գինեգործությունն առաջացել է Վրաստանում 8000 տարի առաջ',
+            difficulty: 'medium',
+            area: 69700
+        },
+        {
+            id: 38,
+            type: 'streetview',
+            title: '🛤️ Ո՞ր քաղաքի պատմական կենտրոնն է',
+            hint: 'Ռուսաստան, Կարմիր հրապարակ, գունագեղ գմբեթներ',
+            answer: 'Մոսկվա',
+            country: 'Ռուսաստան',
+            continent: 'Եվրոպա',
+            points: 400,
+            media: {
+                type: 'image',
+                url: 'https://images.unsplash.com/photo-1764726198740-5c2fd87f28af?q=80&w=1074&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
+            },
+            funFact: 'Կարմիր հրապարակի անունը կապված չէ կոմունիզմի կամ կարմիր գույնի հետ, այլ նշանակում է "գեղեցիկ" հին ռուսերենում',
+            difficulty: 'medium'
+        }
         // Հետագա հարցեր 100+...
         // [ԿԱՐԵՎՈՐ: Այստեղ ավելացրեք 100+ լրացուցիչ հարցեր]
     ];
