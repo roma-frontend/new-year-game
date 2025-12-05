@@ -39,7 +39,7 @@ interface Category {
 }
 
 interface DifficultySetting {
-    time: number;
+    time: number; // Общее время игры в секундах для режима Blitz
     points: number;
     label: string;
     color: string;
@@ -82,6 +82,10 @@ interface Team {
     lives: number;
     efficiency: number;
     lastAction: { type: string; points?: number; time: number } | null;
+    // НОВОЕ: Для режима Blitz
+    wordsPerMinute: number;
+    averageTimePerWord: number;
+    totalWordsGuessed: number;
 }
 
 interface Card {
@@ -90,6 +94,10 @@ interface Card {
     categoryInfo: Category;
     difficulty: number;
     aiHint: string[];
+    // НОВОЕ: Для режима Blitz
+    startTime?: number;
+    endTime?: number;
+    timeTaken?: number;
 }
 
 interface HistoryItem {
@@ -110,6 +118,10 @@ interface Stats {
     skippedWords: number;
     history: HistoryItem[];
     avgTime: number;
+    // НОВОЕ: Для режима Blitz
+    totalGameTime: number;
+    wordsPerMinute: number;
+    bestStreak: number;
 }
 
 interface Achievement {
@@ -162,7 +174,11 @@ const NewYearCharades = () => {
         totalWords: 0,
         skippedWords: 0,
         history: [],
-        avgTime: 0
+        avgTime: 0,
+        // НОВОЕ: Для режима Blitz
+        totalGameTime: 0,
+        wordsPerMinute: 0,
+        bestStreak: 0
     });
     const [showConfetti, setShowConfetti] = useState(false);
     const [showFireworks, setShowFireworks] = useState(false);
@@ -171,7 +187,7 @@ const NewYearCharades = () => {
     const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
     const [soundEnabled, setSoundEnabled] = useState(true);
     const [showWord, setShowWord] = useState(true);
-    const [gameMode, setGameMode] = useState<GameMode>('classic');
+    const [gameMode, setGameMode] = useState<GameMode>('blitz'); // По умолчанию Blitz
     const [streak, setStreak] = useState(0);
     const [achievements, setAchievements] = useState<Achievement[]>([]);
     const [cardBack, setCardBack] = useState('gradient1');
@@ -188,6 +204,14 @@ const NewYearCharades = () => {
     const [mood, setMood] = useState<Mood>('neutral');
     const [particles, setParticles] = useState<Particle[]>([]);
     const [ambientSounds, setAmbientSounds] = useState(true);
+    
+    // НОВОЕ: Для режима Blitz
+    const [gameStartTime, setGameStartTime] = useState<number | null>(null);
+    const [totalGameTime, setTotalGameTime] = useState(180); // 3 минуты по умолчанию
+    const [isGameActive, setIsGameActive] = useState(false);
+    const [wordsGuessed, setWordsGuessed] = useState(0);
+    const [currentStreak, setCurrentStreak] = useState(0);
+    const [maxCombo, setMaxCombo] = useState(0);
 
     // Состояния для управления командами и игроками
     const [availablePlayers, setAvailablePlayers] = useState<Player[]>([]);
@@ -212,6 +236,13 @@ const NewYearCharades = () => {
     const [playAchievement] = useSound('/sounds/achievement.mp3', { volume: 0.5 });
     const [playSpecial] = useSound('/sounds/special.mp3', { volume: 0.4 });
     const [playAmbient] = useSound('/sounds/ambient.mp3', { volume: 0.1, loop: true });
+
+
+    useEffect(() => {
+    if (gameState === 'results' && soundEnabled) {
+        playWin();
+    }
+}, [gameState, soundEnabled, playWin]);
 
     const categories: Record<string, Category> = {
         movies: {
@@ -311,7 +342,7 @@ const NewYearCharades = () => {
 
     const difficultySettings: Record<Difficulty, DifficultySetting> = {
         easy: {
-            time: 90,
+            time: 300, // 5 минут
             points: 1,
             label: 'Հեշտ',
             color: 'from-green-400 to-emerald-500',
@@ -320,7 +351,7 @@ const NewYearCharades = () => {
             description: 'Իդեալական սկսնակների համար'
         },
         medium: {
-            time: 60,
+            time: 180, // 3 минуты
             points: 2,
             label: 'Միջին',
             color: 'from-yellow-400 to-orange-500',
@@ -329,7 +360,7 @@ const NewYearCharades = () => {
             description: 'Հավասարակշռված բարդություն'
         },
         hard: {
-            time: 45,
+            time: 120, // 2 минуты
             points: 3,
             label: 'Բարդ',
             color: 'from-orange-500 to-red-600',
@@ -338,7 +369,7 @@ const NewYearCharades = () => {
             description: 'Փորձառու խաղացողների համար'
         },
         expert: {
-            time: 30,
+            time: 90, // 90 секунд
             points: 5,
             label: 'Փորձառու',
             color: 'from-red-600 to-purple-700',
@@ -347,7 +378,7 @@ const NewYearCharades = () => {
             description: 'Ճշգրիտ ռեակցիա և մտածողություն'
         },
         insane: {
-            time: 15,
+            time: 60, // 60 секунд
             points: 8,
             label: 'Խելագար',
             color: 'from-purple-700 to-pink-700',
@@ -381,10 +412,10 @@ const NewYearCharades = () => {
         },
         blitz: {
             name: 'Բլից',
-            description: 'Առավելագույն բառեր 3 րոպեում',
+            description: 'Առավելագույն բառեր սահմանափակ ժամանակում',
             icon: <Zap className="w-6 h-6" />,
             color: 'from-purple-500 to-violet-500',
-            features: ['Ժամանակի սահմանափակում', 'Արագ մտածողություն', 'Համակենտրոնացում']
+            features: ['Ժամանակի սահմանափակում', 'Արագ մտածողություն', 'Համակենտրոնացում', 'Բառերի հոսք']
         },
         cooperation: {
             name: 'Խմբային',
@@ -539,7 +570,11 @@ const NewYearCharades = () => {
             maxStreak: 0,
             lives: gameMode === 'survival' ? 3 : 0,
             efficiency: 0,
-            lastAction: null
+            lastAction: null,
+            // НОВОЕ: Для режима Blitz
+            wordsPerMinute: 0,
+            averageTimePerWord: 0,
+            totalWordsGuessed: 0
         };
 
         setTeams(prev => [...prev, newTeam]);
@@ -696,47 +731,8 @@ const NewYearCharades = () => {
         setTimeout(() => setParticles([]), 2000);
     };
 
-    useEffect(() => {
-        let interval: NodeJS.Timeout;
-        if (gameState === 'playing' && timeLeft > 0) {
-            interval = setInterval(() => {
-                setTimeLeft(prev => {
-                    if (prev <= 10 && soundEnabled) {
-                        playTimer();
-                    }
-                    return prev - 1;
-                });
-            }, 1000);
-        } else if (timeLeft === 0 && gameState === 'playing') {
-            handleSkip();
-        }
-        return () => clearInterval(interval);
-    }, [gameState, timeLeft, soundEnabled]);
-
-    const toggleCategory = (category: string) => {
-        setSelectedCategories(prev =>
-            prev.includes(category)
-                ? prev.filter(c => c !== category)
-                : [...prev, category]
-        );
-        if (soundEnabled) playClick();
-    };
-
-    const selectAllCategories = () => {
-        setSelectedCategories(Object.keys(categories));
-        if (soundEnabled) playClick();
-    };
-
-    const startSetup = () => {
-        if (selectedCategories.length === 0) {
-            alert('Ընտրեք գոնե մեկ կատեգորիա!');
-            return;
-        }
-        if (soundEnabled) playClick();
-        setGameState('teamSetup');
-    };
-
-    const startGame = () => {
+    // НОВАЯ ЛОГИКА ДЛЯ РЕЖИМА BLITZ - СТАРТ ИГРЫ
+    const startBlitzGame = () => {
         // Случайно выбираем объясняющего и угадывающего
         const selectRandomPlayers = () => {
             const currentTeamData = teams[currentTeam];
@@ -761,12 +757,25 @@ const NewYearCharades = () => {
         };
 
         selectRandomPlayers();
+        
+        setIsGameActive(true);
+        setGameStartTime(Date.now());
+        setWordsGuessed(0);
+        setCurrentStreak(0);
+        setMaxCombo(0);
+        
+        // Устанавливаем общее время игры в зависимости от выбранной сложности
+        const gameTime = difficultySettings[difficulty].time;
+        setTotalGameTime(gameTime);
+        setTimeLeft(gameTime);
+        
         drawCard();
         setGameState('playing');
-        setStartTime(Date.now());
         setAnimateCard(true);
-        setShowWord(false); // Слово изначально СКРЫТО
+        setShowWord(false);
+        
         setTimeout(() => setAnimateCard(false), 500);
+        
         if (soundEnabled) {
             playCardFlip();
             playSpecial();
@@ -774,6 +783,7 @@ const NewYearCharades = () => {
         generateParticles('sparkle', 20);
     };
 
+    // Модифицированная функция для рисования карточки
     const drawCard = () => {
         const availableCategories = selectedCategories.length > 0
             ? selectedCategories
@@ -796,108 +806,92 @@ const NewYearCharades = () => {
         const categoryWords = words[selectedCategory];
         const randomWord = categoryWords[Math.floor(Math.random() * categoryWords.length)];
 
-        setCurrentCard({
+        const newCard: Card = {
             word: randomWord,
             category: selectedCategory,
             categoryInfo: categories[selectedCategory],
             difficulty: categories[selectedCategory].difficulty,
-            aiHint: getAIHint(randomWord, selectedCategory, difficulty)
-        });
-        setTimeLeft(difficultySettings[difficulty].time);
-        setStats(prev => ({ ...prev, totalWords: prev.totalWords + 1 }));
+            aiHint: getAIHint(randomWord, selectedCategory, difficulty),
+            startTime: Date.now() // Запоминаем время начала карточки
+        };
 
+        setCurrentCard(newCard);
+        
         if (soundEnabled) playCardFlip();
     };
 
+    // Модифицированная функция handleCorrect для режима Blitz
     const handleCorrect = () => {
         if (!currentCard) return;
 
-        const timeTaken = difficultySettings[difficulty].time - timeLeft;
-        const basePoints = difficultySettings[difficulty].points;
+        const endTime = Date.now();
+        const timeTaken = currentCard.startTime ? (endTime - currentCard.startTime) / 1000 : 0;
+        
+        // Базовые очки зависят от скорости
+        let basePoints = difficultySettings[difficulty].points;
         let multiplier = difficultySettings[difficulty].multiplier;
 
+        // Бонус за скорость (чем быстрее, тем больше очков)
+        if (timeTaken < 5) multiplier += 1.5;
+        else if (timeTaken < 10) multiplier += 1.0;
+        else if (timeTaken < 20) multiplier += 0.5;
+
+        // Бонус за комбо
+        if (currentStreak >= 5) multiplier += 1.0;
+        else if (currentStreak >= 3) multiplier += 0.5;
+
         if (specialCards.double) multiplier *= 2;
-        if (streak >= 3) multiplier += 0.5;
-        if (timeTaken < 10) multiplier += 0.5;
         if (combo > 0) multiplier += combo * 0.1;
 
         const points = Math.floor(basePoints * multiplier);
 
-        setShowConfetti(true);
-        setShowFireworks(true);
-        generateParticles('confetti', 50);
-        setTimeout(() => {
-            setShowConfetti(false);
-            setShowFireworks(false);
-        }, 2000);
+        // Обновляем комбо
+        const newStreak = currentStreak + 1;
+        setCurrentStreak(newStreak);
+        if (newStreak > maxCombo) {
+            setMaxCombo(newStreak);
+        }
 
-        setStreak(prev => prev + 1);
-        setCombo(prev => prev + 1);
-        setMood('happy');
+        // Увеличиваем счетчик угаданных слов
+        setWordsGuessed(prev => prev + 1);
 
-        const newHistory: HistoryItem = {
-            team: teams[currentTeam].name,
-            word: currentCard.word,
-            time: timeTaken,
-            points: points,
-            round: round,
-            difficulty: currentCard.difficulty,
-            multiplier: multiplier.toFixed(2)
-        };
+        // Обновляем статистику
+        setStats(prev => {
+            const totalWords = prev.totalWords + 1;
+            const avgTime = ((prev.avgTime * (totalWords - 1)) + timeTaken) / totalWords;
+            
+            return {
+                ...prev,
+                totalWords,
+                avgTime: Math.round(avgTime * 100) / 100,
+                bestStreak: Math.max(prev.bestStreak, newStreak)
+            };
+        });
 
-        const updatedTeams = teams.map((team, idx) => {
+        // Обновляем команду
+        setTeams(prev => prev.map((team, idx) => {
             if (idx === currentTeam) {
-                const newCorrectGuesses = team.correctGuesses + 1;
-                const newFastestTime = team.fastestTime ? Math.min(team.fastestTime, timeTaken) : timeTaken;
-                const newStreak = team.streak + 1;
-                const newMaxStreak = Math.max(team.maxStreak, newStreak);
-                const totalActions = team.correctGuesses + team.skippedWords;
-                const newEfficiency = totalActions > 0 ? (newCorrectGuesses / totalActions) * 100 : 100;
-
+                const totalTime = (team.averageTimePerWord * team.totalWordsGuessed + timeTaken) / (team.totalWordsGuessed + 1);
+                const newWordsGuessed = team.totalWordsGuessed + 1;
+                
                 return {
                     ...team,
                     score: team.score + points,
-                    correctGuesses: newCorrectGuesses,
-                    fastestTime: newFastestTime,
-                    streak: newStreak,
-                    maxStreak: newMaxStreak,
-                    efficiency: newEfficiency,
+                    correctGuesses: team.correctGuesses + 1,
+                    totalWordsGuessed: newWordsGuessed,
+                    averageTimePerWord: totalTime,
+                    streak: team.streak + 1,
+                    maxStreak: Math.max(team.maxStreak, team.streak + 1),
                     lastAction: { type: 'correct', points, time: Date.now() }
                 };
             }
             return team;
-        });
+        }));
 
-        setTeams(updatedTeams);
-
-        setStats(prev => {
-            const totalTime = prev.history.reduce((sum, item) => sum + item.time, 0) + timeTaken;
-            const avgTime = totalTime / (prev.history.length + 1);
-            const newStats: Stats = {
-                ...prev,
-                history: [...prev.history, newHistory],
-                avgTime: Math.round(avgTime * 100) / 100
-            };
-
-            if (!newStats.fastestGuess || timeTaken < newStats.fastestGuess.time) {
-                newStats.fastestGuess = {
-                    team: teams[currentTeam].name,
-                    time: timeTaken,
-                    word: currentCard.word,
-                    points: points
-                };
-            }
-
-            if (!newStats.slowestGuess || timeTaken > newStats.slowestGuess.time) {
-                newStats.slowestGuess = {
-                    team: teams[currentTeam].name,
-                    time: timeTaken,
-                    word: currentCard.word
-                };
-            }
-
-            return newStats;
-        });
+        // Визуальные эффекты
+        setShowConfetti(true);
+        generateParticles('confetti', 30);
+        setTimeout(() => setShowConfetti(false), 1000);
 
         if (soundEnabled) {
             playCorrect();
@@ -905,17 +899,21 @@ const NewYearCharades = () => {
         }
 
         checkAchievements(timeTaken, points);
-        nextTurn();
+        
+        // В режиме Blitz сразу рисуем новую карточку
+        setTimeout(() => {
+            drawCard();
+            setShowWord(false);
+        }, 500);
     };
 
+    // Модифицированная функция handleSkip для режима Blitz
     const handleSkip = () => {
-        setStreak(0);
-        setCombo(0);
-        setMood('sad');
-
+        setCurrentStreak(0);
+        
         if (soundEnabled) playIncorrect();
 
-        const updatedTeams = teams.map((team, idx) => {
+        setTeams(prev => prev.map((team, idx) => {
             if (idx === currentTeam) {
                 return {
                     ...team,
@@ -925,21 +923,66 @@ const NewYearCharades = () => {
                 };
             }
             return team;
-        });
+        }));
 
-        setTeams(updatedTeams);
         setStats(prev => ({ ...prev, skippedWords: prev.skippedWords + 1 }));
 
-        // AI suggests a hint if skipping too much
-        if (aiAssistant && teams[currentTeam]?.skippedWords > 2) {
-            setTimeout(() => {
-                alert(`🤖 AI առաջարկ. Փորձեք օգտագործել հատուկ քարտեր կամ խնդրեք թիմից օգնություն։`);
-            }, 500);
-        }
-
-        nextTurn();
+        // В режиме Blitz сразу рисуем новую карточку
+        setTimeout(() => {
+            drawCard();
+            setShowWord(false);
+        }, 500);
     };
 
+    // Модифицированный useEffect для таймера
+    useEffect(() => {
+        let interval: NodeJS.Timeout;
+        
+        if (gameState === 'playing' && isGameActive && timeLeft > 0) {
+            interval = setInterval(() => {
+                setTimeLeft(prev => {
+                    if (prev <= 10 && soundEnabled) {
+                        playTimer();
+                    }
+                    
+                    // Если время вышло, завершаем игру
+                    if (prev <= 1) {
+                        endGame();
+                        return 0;
+                    }
+                    
+                    return prev - 1;
+                });
+            }, 1000);
+        }
+        
+        return () => clearInterval(interval);
+    }, [gameState, timeLeft, soundEnabled, isGameActive]);
+
+    const toggleCategory = (category: string) => {
+        setSelectedCategories(prev =>
+            prev.includes(category)
+                ? prev.filter(c => c !== category)
+                : [...prev, category]
+        );
+        if (soundEnabled) playClick();
+    };
+
+    const selectAllCategories = () => {
+        setSelectedCategories(Object.keys(categories));
+        if (soundEnabled) playClick();
+    };
+
+    const startSetup = () => {
+        if (selectedCategories.length === 0) {
+            alert('Ընտրեք գոնե մեկ կատեգորիա!');
+            return;
+        }
+        if (soundEnabled) playClick();
+        setGameState('teamSetup');
+    };
+
+    // Модифицированная функция checkAchievements для режима Blitz
     const checkAchievements = (timeTaken: number, points: number) => {
         const newAchievements: Achievement[] = [];
         const team = teams[currentTeam];
@@ -953,7 +996,7 @@ const NewYearCharades = () => {
             });
         }
 
-        if (streak >= 10) {
+        if (currentStreak >= 10) {
             newAchievements.push({
                 name: 'Անհաղթահարելի',
                 emoji: '🏆',
@@ -962,12 +1005,12 @@ const NewYearCharades = () => {
             });
         }
 
-        if (team.score >= pointsToWin && gameMode === 'tournament') {
+        if (wordsGuessed >= 20) {
             newAchievements.push({
-                name: 'Չեմպիոն',
-                emoji: '👑',
-                description: 'Հասել եք նպատակային միավորներին!',
-                points: 200
+                name: 'Սուպեր արագ',
+                emoji: '🚀',
+                description: '20+ բառ 3 րոպեում',
+                points: 150
             });
         }
 
@@ -980,7 +1023,7 @@ const NewYearCharades = () => {
             });
         }
 
-        if (team.efficiency > 90) {
+        if (team && team.efficiency > 90) {
             newAchievements.push({
                 name: 'Կատարելատիպ',
                 emoji: '🎯',
@@ -994,41 +1037,6 @@ const NewYearCharades = () => {
             if (soundEnabled) playAchievement();
             generateParticles('achievement', 20);
         }
-    };
-
-    const nextTurn = () => {
-        setSpecialCards({});
-        const nextTeam = (currentTeam + 1) % teams.length;
-
-        if (nextTeam === 0) {
-            setRound(prev => prev + 1);
-
-            if (gameMode === 'classic' && round >= maxRounds) {
-                endGame();
-                return;
-            }
-        }
-
-        if (gameMode === 'tournament') {
-            const winner = teams.find(team => team.score >= pointsToWin);
-            if (winner) {
-                endGame();
-                return;
-            }
-        }
-
-        if (gameMode === 'survival') {
-            const aliveTeams = teams.filter(team => team.lives > 0);
-            if (aliveTeams.length === 1) {
-                endGame();
-                return;
-            }
-        }
-
-        setCurrentTeam(nextTeam);
-        setGameState('ready');
-        setCurrentCard(null);
-        setHintLevel(0);
     };
 
     const useSpecialCard = (type: SpecialCardType) => {
@@ -1094,15 +1102,22 @@ const NewYearCharades = () => {
         }
     };
 
+    // Модифицированная функция endGame для режима Blitz
     const endGame = () => {
-        const sortedTeams = [...teams].sort((a, b) => b.score - a.score);
-        const winner = sortedTeams[0];
-
+        setIsGameActive(false);
+        
+        // Рассчитываем слова в минуту
+        const gameDuration = totalGameTime / 60; // в минутах
+        const wordsPerMinute = gameDuration > 0 ? wordsGuessed / gameDuration : 0;
+        
         setStats(prev => ({
             ...prev,
-            bestPlayer: sortedTeams.sort((a, b) => b.correctGuesses - a.correctGuesses)[0].name,
-            totalTime: prev.history.reduce((sum, item) => sum + item.time, 0)
+            totalGameTime: totalGameTime,
+            wordsPerMinute: Math.round(wordsPerMinute * 100) / 100
         }));
+
+        const sortedTeams = [...teams].sort((a, b) => b.score - a.score);
+        const winner = sortedTeams[0];
 
         setGameState('results');
         setShowFireworks(true);
@@ -1130,12 +1145,19 @@ const NewYearCharades = () => {
             totalWords: 0,
             skippedWords: 0,
             history: [],
-            avgTime: 0
+            avgTime: 0,
+            totalGameTime: 0,
+            wordsPerMinute: 0,
+            bestStreak: 0
         });
         setAchievements([]);
         setCurrentTeam(0);
         setCurrentCard(null);
         setMood('neutral');
+        setIsGameActive(false);
+        setWordsGuessed(0);
+        setCurrentStreak(0);
+        setMaxCombo(0);
         if (soundEnabled) playClick();
     };
 
@@ -1224,7 +1246,7 @@ const NewYearCharades = () => {
             <>
                 <div className={`min-h-screen bg-gradient-to-br ${getThemeClasses()} flex items-center justify-center p-4 transition-all duration-1000`}>
 
-                    {/* Ավելացրեք այս կոդը այստեղ՝ վերևի ձախ անկյունում */}
+                    {/* Кнопка возврата на главную */}
                     <div className="fixed left-[2rem] top-[2rem] z-50">
                         <Button
                             onClick={() => {
@@ -1937,7 +1959,7 @@ const NewYearCharades = () => {
 
         // Случайно выбираем игроков для отображения в READY SCREEN
         const selectPlayersForDisplay = () => {
-            if (!team || team.players.length < 2) return;
+            if (!team || team.players.length < 2) return null;
 
             const players = [...team.players];
             const explainerIndex = Math.floor(Math.random() * players.length);
@@ -1969,6 +1991,21 @@ const NewYearCharades = () => {
                     <div className="text-6xl font-black text-transparent bg-gradient-to-r from-yellow-300 via-pink-300 to-purple-300 bg-clip-text mb-8">
                         {team?.name || 'Թիմ'}
                     </div>
+
+                    {/* Добавляем информацию о режиме Blitz */}
+                    {gameMode === 'blitz' && (
+                        <div className="mb-6 p-4 bg-gradient-to-r from-purple-900/30 to-pink-900/30 rounded-xl border border-purple-500/30">
+                            <div className="flex items-center justify-center gap-2 mb-2">
+                                <Zap className="w-6 h-6 text-yellow-400" />
+                                <div className="text-white font-bold text-xl">ԲԼԻՏԶ ՌԵԺԻՄ</div>
+                            </div>
+                            <div className="text-center text-white/80">
+                                <div className="text-4xl font-black text-yellow-300 mb-2">{difficultySettings[difficulty].time / 60} րոպե</div>
+                                <div className="text-sm">Ուշադրություն! Հարցերը չեն ավարտվում մինչև ժամանակի ավարտը</div>
+                                <div className="text-xs text-yellow-300 mt-1">Որքան շատ բառ գուշակեք, այնքան շատ միավոր կստանաք!</div>
+                            </div>
+                        </div>
+                    )}
 
                     {/* Информация о команде */}
                     <div className="mb-6 bg-white/5 rounded-xl p-4 border border-white/20">
@@ -2018,10 +2055,10 @@ const NewYearCharades = () => {
 
                         <div className="p-4 bg-gradient-to-r from-green-900/30 to-emerald-900/30 rounded-xl">
                             <div className="text-white/80 text-sm">
-                                <span className="text-yellow-300 font-bold">{selectedPlayers?.guesser?.name}</span> - փակի՛ր աչքերդ
+                                <span className="text-yellow-300 font-bold">{selectedPlayers?.guesser?.name || '...'}</span> - փակի՛ր աչքերդ
                             </div>
                             <div className="text-white/80 text-sm mt-1">
-                                <span className="text-green-300 font-bold">{selectedPlayers?.explainer?.name}</span> - պատրաստվի՛ր բացատրել
+                                <span className="text-green-300 font-bold">{selectedPlayers?.explainer?.name || '...'}</span> - պատրաստվի՛ր բացատրել
                             </div>
                         </div>
                     </div>
@@ -2046,7 +2083,12 @@ const NewYearCharades = () => {
 
                     <button
                         onClick={() => {
-                            startGame();
+                            if (gameMode === 'blitz') {
+                                startBlitzGame();
+                            } else {
+                                // Здесь можно добавить логику для других режимов
+                                startBlitzGame(); // Временно используем ту же функцию
+                            }
                             if (soundEnabled) playSpecial();
                         }}
                         className="w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white text-3xl font-bold py-8 rounded-2xl shadow-xl transition-all transform hover:scale-105 hover:shadow-2xl flex items-center justify-center gap-3"
@@ -2059,7 +2101,7 @@ const NewYearCharades = () => {
         );
     }
 
-    // Модифицируйте PLAYING SCREEN
+    // PLAYING SCREEN с новой логикой для Blitz
     if (gameState === 'playing' && currentCard) {
         const currentTeamData = teams[currentTeam];
 
@@ -2107,6 +2149,30 @@ const NewYearCharades = () => {
                                     </div>
                                 </div>
                             </div>
+
+                            {/* Добавляем статистику для режима Blitz */}
+                            {gameMode === 'blitz' && (
+                                <div className="grid grid-cols-4 gap-2 mt-4">
+                                    <div className="bg-white/10 backdrop-blur-lg rounded-lg p-3 text-center">
+                                        <div className="text-white/60 text-xs mb-1">Բառեր</div>
+                                        <div className="text-white text-xl font-bold">{wordsGuessed}</div>
+                                    </div>
+                                    <div className="bg-white/10 backdrop-blur-lg rounded-lg p-3 text-center">
+                                        <div className="text-white/60 text-xs mb-1">Կոմբո</div>
+                                        <div className="text-yellow-300 text-xl font-bold">{currentStreak}</div>
+                                    </div>
+                                    <div className="bg-white/10 backdrop-blur-lg rounded-lg p-3 text-center">
+                                        <div className="text-white/60 text-xs mb-1">Մաքս Կոմբո</div>
+                                        <div className="text-orange-300 text-xl font-bold">{maxCombo}</div>
+                                    </div>
+                                    <div className="bg-white/10 backdrop-blur-lg rounded-lg p-3 text-center">
+                                        <div className="text-white/60 text-xs mb-1">Բառ/րոպե</div>
+                                        <div className="text-green-300 text-xl font-bold">
+                                            {totalGameTime > 0 ? Math.round(wordsGuessed / (totalGameTime / 60)) : 0}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
 
                             {/* Current Status */}
                             <div className="mt-4 p-4 bg-gradient-to-r from-blue-900/30 to-purple-900/30 rounded-lg border border-blue-500/30">
@@ -2341,16 +2407,10 @@ const NewYearCharades = () => {
         );
     }
 
-    // RESULTS SCREEN
+    // RESULTS SCREEN с новой статистикой для Blitz
     if (gameState === 'results') {
-        const sortedTeams = [...teams].sort((a, b) => b.score - a.score);
-        const winner = sortedTeams[0];
-
-        useEffect(() => {
-            if (soundEnabled) {
-                playWin();
-            }
-        }, []);
+    const sortedTeams = [...teams].sort((a, b) => b.score - a.score);
+    const winner = sortedTeams[0];
 
         return (
             <div className={`min-h-screen bg-gradient-to-br ${getThemeClasses()} p-4 overflow-y-auto`}>
@@ -2419,11 +2479,48 @@ const NewYearCharades = () => {
                                                 <span>Մաքսիմալ շարք</span>
                                                 <span className="font-bold">🔥 {team.maxStreak}</span>
                                             </div>
+                                            {/* Новая статистика для Blitz */}
+                                            {gameMode === 'blitz' && team.totalWordsGuessed > 0 && (
+                                                <>
+                                                    <div className="flex justify-between">
+                                                        <span>Ընդհանուր բառեր</span>
+                                                        <span className="font-bold">📝 {team.totalWordsGuessed}</span>
+                                                    </div>
+                                                    <div className="flex justify-between">
+                                                        <span>Միջին ժամանակ</span>
+                                                        <span className="font-bold">⏱️ {team.averageTimePerWord.toFixed(1)}վ</span>
+                                                    </div>
+                                                </>
+                                            )}
                                         </div>
                                     </div>
                                 </div>
                             ))}
                         </div>
+
+                        {/* Статистика Blitz */}
+                        {gameMode === 'blitz' && (
+                            <div className="bg-white/10 rounded-2xl p-6 border border-white/20 mb-8">
+                                <h3 className="text-white font-bold text-xl mb-4 flex items-center gap-2">
+                                    <Zap className="text-yellow-400" />
+                                    Բլից վիճակագրություն
+                                </h3>
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                    <div className="text-center p-4 bg-white/5 rounded-xl">
+                                        <div className="text-4xl font-black text-yellow-300 mb-2">{stats.wordsPerMinute}</div>
+                                        <div className="text-white/60">Բառ րոպեում</div>
+                                    </div>
+                                    <div className="text-center p-4 bg-white/5 rounded-xl">
+                                        <div className="text-4xl font-black text-green-300 mb-2">{stats.bestStreak}</div>
+                                        <div className="text-white/60">Լավագույն կոմբո</div>
+                                    </div>
+                                    <div className="text-center p-4 bg-white/5 rounded-xl">
+                                        <div className="text-4xl font-black text-blue-300 mb-2">{stats.totalWords}</div>
+                                        <div className="text-white/60">Ընդհանուր բառեր</div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
 
                         {/* Statistics */}
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
