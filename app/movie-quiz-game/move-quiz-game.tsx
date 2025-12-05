@@ -1338,7 +1338,7 @@ useEffect(() => {
             <audio ref={correctSoundRef} src="/sounds/correct.mp3" preload="auto" />
             <audio ref={incorrectSoundRef} src="/sounds/incorrect.mp3" preload="auto" />
             <audio ref={timerSoundRef} src="/sounds/timer.mp3" preload="auto" />
-            <audio ref={winSoundRef} src="/sounds/win.mp3" preload="auto" />
+            <audio ref={winSoundRef} src="/sounds/special.mp3" preload="auto" />
             <audio ref={loseSoundRef} src="/sounds/lose.mp3" preload="auto" />
 
             {/* Main content */}
