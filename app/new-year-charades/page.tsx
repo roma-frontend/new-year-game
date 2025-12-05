@@ -1298,7 +1298,7 @@ const NewYearCharades = () => {
                         <div className="text-center mb-8">
                             <div className="text-8xl mb-4 animate-pulse">🎭</div>
                             <h1 className="text-6xl font-black text-white mb-3 bg-gradient-to-r from-yellow-300 via-pink-300 to-purple-300 bg-clip-text text-transparent">
-                                Ամանորյա Կոկորդիլոս
+                                Ամանորյա Ալիաս
                             </h1>
                             <p className="text-2xl text-blue-200">Ստեղծեք ձեր սեփական թիմերը և խաղացեք!</p>
                             <div className="flex items-center justify-center gap-2 mt-2">

@@ -178,7 +178,7 @@ const NewYearLanding = () => {
               <div className="absolute inset-0 bg-gradient-to-r from-yellow-400 via-orange-400 to-red-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               <span className="relative z-10 flex items-center gap-4">
                 <Gift className="w-10 h-10 animate-bounce" />
-                Ամանորյա կոկորդիլոս
+                Ամանորյա Ալիաս
                 <PartyPopper className="w-10 h-10 animate-bounce" style={{ animationDelay: '0.2s' }} />
               </span>
             </Button>
