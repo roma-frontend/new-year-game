@@ -55,7 +55,7 @@ const TruthOrDareGame = () => {
     totalTime: 0,
     mvpPlayer: null
   });
-  
+
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [isDrumRoll, setIsDrumRoll] = useState(false);
   const [tournamentSettings, setTournamentSettings] = useState<TournamentSettings>({
@@ -65,13 +65,13 @@ const TruthOrDareGame = () => {
   const [timeRemaining, setTimeRemaining] = useState(0);
   const [tournamentWinner, setTournamentWinner] = useState<Player | null>(null);
   const [loserForPunishment, setLoserForPunishment] = useState<Player | null>(null);
-  
+
   const startTimeRef = useRef<number>(0);
   const drumRollRef = useRef<any>(null);
   const timerIntervalRef = useRef<any>(null);
 
   const avatars = ['🎅', '🤶', '🧝', '⛄', '🦌', '🎄', '⭐', '🎁', '❄️', '🔔', '🕯️', '🎊'];
-  
+
   // ВАШ МАССИВ CHALLENGES ЗДЕСЬ
   const challenges: Challenge[] = [
     // ПРАВДА - Смешные
@@ -80,28 +80,28 @@ const TruthOrDareGame = () => {
     { id: 3, type: 'truth', category: 'funny', text: 'Ո՞րն է քո ամենավատ նվերը, որ ստացել ես Ամանորին:', points: 10 },
     { id: 4, type: 'truth', category: 'funny', text: 'Ինչպիսի՞ն ես դու առավոտյան առանց սուրճի:', points: 10 },
     { id: 5, type: 'truth', category: 'funny', text: 'Ո՞րն է քո ամենաանհաջող սելֆին:', points: 10 },
-    
+
     // ПРАВДА - Романтичные
     { id: 6, type: 'truth', category: 'romantic', text: 'Ո՞վ է այս սենյակում, ում հետ կցանկանայիր համբուրվել Ամանորին:', points: 15 },
     { id: 7, type: 'truth', category: 'romantic', text: 'Պատմի՛ր քո ամենաքաղցր սիրային պատմությունը:', points: 15 },
     { id: 8, type: 'truth', category: 'romantic', text: 'Ունե՞ս գաղտնի համակրանք մեկի նկատմամբ այստեղ:', points: 15 },
     { id: 9, type: 'truth', category: 'romantic', text: 'Ո՞րն է քո իդեալական ռոմանտիկ ժամադրությունը:', points: 15 },
     { id: 10, type: 'truth', category: 'romantic', text: 'Ե՞րբ էիր վերջին անգամ սիրահարված:', points: 15 },
-    
+
     // ПРАВДА - Экстремальные
     { id: 11, type: 'truth', category: 'extreme', text: 'Ո՞րն է ամենամեծ ռիսկը, որ վերցրել ես կյանքումդ:', points: 20 },
     { id: 12, type: 'truth', category: 'extreme', text: 'Պատմի՛ր, ե՞րբ քեզ բռնել են ստելիս:', points: 20 },
     { id: 13, type: 'truth', category: 'extreme', text: 'Ո՞րն է քո ամենաղավաղ գաղտնիքը:', points: 20 },
     { id: 14, type: 'truth', category: 'extreme', text: 'Ինչո՞վ չես հպարտանում, բայց արել ես:', points: 20 },
     { id: 15, type: 'truth', category: 'extreme', text: 'Ո՞ւմ հետ չպիտի անցկացվեր միայնակ 24 ժամ:', points: 20 },
-    
+
     // ПРАВДА - Неловкие
     { id: 16, type: 'truth', category: 'embarrassing', text: 'Ո՞րն է քո ամենաամոթալի պահը դպրոցում:', points: 15 },
     { id: 17, type: 'truth', category: 'embarrassing', text: 'Ե՞րբ ես վերջին անգամ լացել հանրային տեղում:', points: 15 },
     { id: 18, type: 'truth', category: 'embarrassing', text: 'Պատմի՛ր քո ամենաամոթալի սխալը աշխատանքում:', points: 15 },
     { id: 19, type: 'truth', category: 'embarrassing', text: 'Ո՞րն է քո ամենավատ սովորությունը:', points: 15 },
     { id: 20, type: 'truth', category: 'embarrassing', text: 'Ինչ արդարացում ես օգտագործել՝ չգալու համար միջոցառմանը:', points: 15 },
-    
+
     // ДЕЙСТВИЕ - Смешные
     { id: 21, type: 'dare', category: 'funny', text: 'Պարիր 1 րոպե առանց երաժշտության:', points: 15 },
     { id: 22, type: 'dare', category: 'funny', text: 'Խոսիր 2 րոպե առանց «ես» բառի օգտագործելու:', points: 15 },
@@ -111,7 +111,7 @@ const TruthOrDareGame = () => {
     { id: 26, type: 'dare', category: 'funny', text: 'Պատմիր անեկդոտ, ոչ ոք չպետք է ծիծաղի:', points: 15 },
     { id: 27, type: 'dare', category: 'funny', text: 'Խոսիր հանրահայտ մարդու ոճով 1 րոպե:', points: 15 },
     { id: 28, type: 'dare', category: 'funny', text: 'Փորձիր ծիծաղել առանց ձայնի 30 վայրկյան:', points: 15 },
-    
+
     // ДЕЙСТВИЕ - Романтичные
     { id: 29, type: 'dare', category: 'romantic', text: 'Ասա կոմպլիմենտ բոլորին այս սենյակում:', points: 20 },
     { id: 30, type: 'dare', category: 'romantic', text: 'Համբուրիր ձախ կողմից նստողին ճակատին:', points: 20 },
@@ -119,7 +119,7 @@ const TruthOrDareGame = () => {
     { id: 32, type: 'dare', category: 'romantic', text: 'Պարիր դանդաղ պար մեկի հետ այստեղից:', points: 20 },
     { id: 33, type: 'dare', category: 'romantic', text: 'Ասա ում հետ կցանկանայիր դիտել հեղինակային ֆիլմ:', points: 20 },
     { id: 34, type: 'dare', category: 'romantic', text: 'Երգիր սիրային երգ մեկին նվիրաբերելով:', points: 20 },
-    
+
     // ДЕЙСТВИЕ - Экстремальные
     { id: 35, type: 'dare', category: 'extreme', text: 'Խմիր 3 շոթ ջուր 10 վայրկյանում:', points: 25 },
     { id: 36, type: 'dare', category: 'extreme', text: 'Կանգնիր մեկ ոտքի վրա 2 րոպե:', points: 25 },
@@ -127,14 +127,14 @@ const TruthOrDareGame = () => {
     { id: 38, type: 'dare', category: 'extreme', text: 'Ուտիր մի բան ակնոցը փակ աչքերով:', points: 25 },
     { id: 39, type: 'dare', category: 'extreme', text: 'Թող բոլորը գրեն քո դեմքին մարկերով:', points: 25 },
     { id: 40, type: 'dare', category: 'extreme', text: 'Պարիր կոտրված սրտի պարը 1 րոպե:', points: 25 },
-    
+
     // ДЕЙСТВИЕ - Творческие
     { id: 41, type: 'dare', category: 'creative', text: 'Նկարիր Ամանորյա բան 30 վայրկյանում:', points: 20 },
     { id: 42, type: 'dare', category: 'creative', text: 'Ստեղծիր ռեպ հանրահայտ մարդու մասին:', points: 20 },
     { id: 43, type: 'dare', category: 'creative', text: 'Գտիր 10 բառ, որոնք սկսվում են «Ա»-ով:', points: 20 },
     { id: 44, type: 'dare', category: 'creative', text: 'Պատմիր հեքիաթ Ամանորի մասին:', points: 20 },
     { id: 45, type: 'dare', category: 'creative', text: 'Ստեղծիր նոր պարային շարժում և ցույց տուր:', points: 20 },
-    
+
     // ДЕЙСТВИЕ - Стыдные
     { id: 46, type: 'dare', category: 'embarrassing', text: 'Ցույց տուր քո վերջին 5 ֆոտոները հեռախոսից:', points: 20 },
     { id: 47, type: 'dare', category: 'embarrassing', text: 'Կարդա քո վերջին SMS-ը բարձրաձայն:', points: 20 },
@@ -205,15 +205,15 @@ const TruthOrDareGame = () => {
 
   const playSound = (type: 'spin' | 'click' | 'win' | 'drumroll' | 'complete') => {
     if (!soundEnabled) return;
-    
+
     const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
     const oscillator = audioContext.createOscillator();
     const gainNode = audioContext.createGain();
-    
+
     oscillator.connect(gainNode);
     gainNode.connect(audioContext.destination);
-    
-    switch(type) {
+
+    switch (type) {
       case 'spin':
         oscillator.frequency.value = 200;
         gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
@@ -286,11 +286,11 @@ const TruthOrDareGame = () => {
     if (players.length >= 2) {
       setGameState('playing');
       startTimeRef.current = Date.now();
-      
+
       if (tournamentSettings.enabled) {
         setTimeRemaining(tournamentSettings.duration * 60);
       }
-      
+
       playSound('win');
     }
   };
@@ -305,23 +305,23 @@ const TruthOrDareGame = () => {
 
   const spinWheel = () => {
     if (isSpinning || !currentPlayer) return;
-    
+
     setIsSpinning(true);
     setSelectedType(null);
     playSound('spin');
     playSound('drumroll');
-    
+
     const spins = 5 + Math.random() * 3;
     const finalRotation = wheelRotation + (360 * spins) + (Math.random() * 360);
     setWheelRotation(finalRotation);
-    
+
     setTimeout(() => {
       const normalizedRotation = finalRotation % 360;
       const result = normalizedRotation < 180 ? 'truth' : 'dare';
       setSelectedType(result);
       setIsSpinning(false);
       playSound('win');
-      
+
       setTimeout(() => {
         selectChallenge(result);
       }, 500);
@@ -342,7 +342,7 @@ const TruthOrDareGame = () => {
       const updatedPlayers = players.map(p => {
         if (p.id === currentPlayer.id) {
           const newAchievements = [...p.achievements];
-          
+
           if (currentChallenge.type === 'truth') {
             p.truthsCompleted++;
             if (p.truthsCompleted === 5) newAchievements.push('truth_master');
@@ -350,9 +350,9 @@ const TruthOrDareGame = () => {
             p.daresCompleted++;
             if (p.daresCompleted === 5) newAchievements.push('dare_master');
           }
-          
+
           if (p.truthsCompleted + p.daresCompleted === 10) newAchievements.push('challenge_king');
-          
+
           return {
             ...p,
             totalScore: p.totalScore + currentChallenge.points,
@@ -392,20 +392,20 @@ const TruthOrDareGame = () => {
     const totalTime = (Date.now() - startTimeRef.current) / 1000;
     const sortedPlayers = [...players].sort((a, b) => b.totalScore - a.totalScore);
     const winner = sortedPlayers[0];
-    
+
     // Выбираем случайного проигравшего (не победителя)
     const losers = sortedPlayers.slice(1);
     const randomLoser = losers[Math.floor(Math.random() * losers.length)];
-    
+
     setTournamentWinner(winner);
     setLoserForPunishment(randomLoser);
-    
+
     setGameStats(prev => ({
       ...prev,
       totalTime,
       mvpPlayer: winner
     }));
-    
+
     setGameState('stats');
     setShowConfetti(true);
     playSound('win');
@@ -417,13 +417,13 @@ const TruthOrDareGame = () => {
     } else {
       const totalTime = (Date.now() - startTimeRef.current) / 1000;
       const mvp = [...players].sort((a, b) => b.totalScore - a.totalScore)[0];
-      
+
       setGameStats(prev => ({
         ...prev,
         totalTime,
         mvpPlayer: mvp
       }));
-      
+
       setGameState('stats');
       setShowConfetti(true);
       playSound('win');
@@ -434,7 +434,7 @@ const TruthOrDareGame = () => {
     if (timerIntervalRef.current) {
       clearInterval(timerIntervalRef.current);
     }
-    
+
     setGameState('setup');
     setPlayers(players.map(p => ({
       ...p,
@@ -506,15 +506,15 @@ const TruthOrDareGame = () => {
           <div className="mb-12 animate-bounce">
             <Target className="w-40 h-40 mx-auto text-yellow-300 drop-shadow-2xl" />
           </div>
-          
+
           <h1 className="text-[80px] font-black mb-6 bg-gradient-to-r from-yellow-300 via-pink-300 to-purple-300 bg-clip-text text-transparent drop-shadow-2xl animate-pulse">
             Правда или Действие
           </h1>
-          
+
           <p className="text-4xl text-white/90 mb-12 font-bold">
             🎯 Ամանորյա Տարբերակ 🎯
           </p>
-          
+
           <div className="grid grid-cols-3 gap-6 mb-12">
             <Card className="p-6 bg-white/10 backdrop-blur-xl border-2 border-white/20 hover:bg-white/20 transition-all transform hover:scale-110">
               <Zap className="w-16 h-16 mx-auto mb-3 text-yellow-300" />
@@ -529,7 +529,7 @@ const TruthOrDareGame = () => {
               <p className="text-white font-bold text-lg">Ռոմանտիկ Պահեր</p>
             </Card>
           </div>
-          
+
           <Button
             onClick={() => {
               setGameState('setup');
@@ -542,23 +542,15 @@ const TruthOrDareGame = () => {
         </div>
 
         <div className="fixed left-[2rem] top-[2rem]">
-          <button
-            onClick={() => router.push("/")}
-            className="group relative flex px-8 py-4 text-xl font-bold rounded-xl overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-xl h-[3rem] bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-600 hover:to-blue-700 text-white"
+          <Button
+            onClick={() => {
+              router.push('/');
+            }}
+            className="bg-white/10 backdrop-blur-lg hover:bg-white/20 border border-white/20 hover:scale-105 transition-all group"
           >
-            <span className="relative z-10 flex items-center gap-3">
-              <svg 
-                className="w-6 h-6 transform group-hover:-translate-x-1 transition-transform duration-300" 
-                fill="none" 
-                stroke="currentColor" 
-                viewBox="0 0 24 24"
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-              </svg>
-              Գլխավոր էջ
-              <Sparkles className="w-5 h-5 animate-pulse" />
-            </span>
-          </button>
+            <span className="group-hover:-translate-x-1 transition-transform">←</span>
+            <span className="ml-2">Գլխավոր</span>
+          </Button>
         </div>
       </div>
     );
@@ -588,17 +580,16 @@ const TruthOrDareGame = () => {
               <Trophy className="w-10 h-10 text-yellow-300" />
               <h2 className="text-3xl font-black text-white">Մրցաշարի ռեժիմ</h2>
             </div>
-            
+
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-4">
                 <label className="text-xl text-white font-bold">Միացնել մրցաշարը։</label>
                 <button
                   onClick={() => setTournamentSettings(prev => ({ ...prev, enabled: !prev.enabled }))}
-                  className={`px-8 py-3 rounded-xl font-bold text-xl transition-all ${
-                    tournamentSettings.enabled 
-                      ? 'bg-gradient-to-r from-green-500 to-emerald-600' 
+                  className={`px-8 py-3 rounded-xl font-bold text-xl transition-all ${tournamentSettings.enabled
+                      ? 'bg-gradient-to-r from-green-500 to-emerald-600'
                       : 'bg-white/20'
-                  } text-white`}
+                    } text-white`}
                 >
                   {tournamentSettings.enabled ? '✓ Միացված է' : 'Անջատված է'}
                 </button>
@@ -627,7 +618,7 @@ const TruthOrDareGame = () => {
                     <span>30 րոպե</span>
                   </div>
                 </div>
-                
+
                 <div className="p-4 bg-yellow-500/20 rounded-xl border-2 border-yellow-500/50">
                   <p className="text-white text-lg">
                     ⏱️ Խաղը ավտոմատ կերպով կավարտվի {tournamentSettings.duration} րոպեից
@@ -651,8 +642,8 @@ const TruthOrDareGame = () => {
                 className="flex-1 px-6 py-4 text-xl bg-white/20 border-2 border-white/30 rounded-xl text-white placeholder:text-white/50 focus:outline-none focus:border-pink-400"
                 maxLength={20}
               />
-              <Button 
-                onClick={addPlayer} 
+              <Button
+                onClick={addPlayer}
                 disabled={players.length >= 12}
                 className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 px-8 text-lg font-bold"
               >
@@ -702,7 +693,7 @@ const TruthOrDareGame = () => {
               disabled={players.length < 2}
               className="bg-gradient-to-r from-yellow-400 via-pink-500 to-purple-600 hover:from-yellow-500 hover:via-pink-600 hover:to-purple-700 px-16 py-6 text-2xl font-black disabled:opacity-50 disabled:cursor-not-allowed shadow-2xl"
             >
-              <Play className="mr-3 w-8 h-8" /> 
+              <Play className="mr-3 w-8 h-8" />
               {tournamentSettings.enabled ? `Սկսել մրցաշարը (${tournamentSettings.duration} րոպե)` : `Սկսել Խաղը (${players.length} խաղացող)`}
             </Button>
           </div>
@@ -715,7 +706,7 @@ const TruthOrDareGame = () => {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-900 via-purple-900 to-pink-900 p-8">
         <Confetti />
-        
+
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center justify-between mb-8">
             <div>
@@ -724,9 +715,8 @@ const TruthOrDareGame = () => {
             </div>
             <div className="flex items-center gap-4">
               {tournamentSettings.enabled && (
-                <div className={`px-8 py-4 rounded-xl font-black text-3xl ${
-                  timeRemaining <= 60 ? 'bg-red-500 animate-pulse' : 'bg-white/10 backdrop-blur-xl'
-                } text-white`}>
+                <div className={`px-8 py-4 rounded-xl font-black text-3xl ${timeRemaining <= 60 ? 'bg-red-500 animate-pulse' : 'bg-white/10 backdrop-blur-xl'
+                  } text-white`}>
                   <Timer className="inline w-8 h-8 mr-2" />
                   {formatTime(timeRemaining)}
                 </div>
@@ -753,16 +743,15 @@ const TruthOrDareGame = () => {
                   <Users className="w-8 h-8 text-yellow-300" />
                   <h2 className="text-2xl font-bold text-white">Խաղացողներ</h2>
                 </div>
-                
+
                 <div className="space-y-3 max-h-[600px] overflow-y-auto">
                   {[...players].sort((a, b) => b.totalScore - a.totalScore).map((player, index) => (
-                    <Card 
-                      key={player.id} 
-                      className={`p-4 transition-all transform hover:scale-105 ${
-                        currentPlayer?.id === player.id 
-                          ? 'bg-gradient-to-r from-yellow-400 to-orange-500 border-4 border-yellow-300 shadow-2xl' 
+                    <Card
+                      key={player.id}
+                      className={`p-4 transition-all transform hover:scale-105 ${currentPlayer?.id === player.id
+                          ? 'bg-gradient-to-r from-yellow-400 to-orange-500 border-4 border-yellow-300 shadow-2xl'
                           : 'bg-white/10 backdrop-blur-xl border-2 border-white/20'
-                      }`}
+                        }`}
                     >
                       <div className="flex items-center gap-3 mb-2">
                         <div className="text-3xl">{player.avatar}</div>
@@ -791,7 +780,7 @@ const TruthOrDareGame = () => {
                           </p>
                         </div>
                       </div>
-                      
+
                       {player.achievements.length > 0 && (
                         <div className="flex gap-1 mt-2">
                           {player.achievements.includes('truth_master') && (
@@ -828,7 +817,7 @@ const TruthOrDareGame = () => {
                     >
                       <Sparkles className="mr-3 w-8 h-8" /> Պատահական Ընտրություն
                     </Button>
-                    
+
                     <div className="mt-8 pt-8 border-t-2 border-white/20">
                       <p className="text-white/70 mb-4 text-lg">Կամ ընտրեք ձեռքով:</p>
                       <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
@@ -857,99 +846,98 @@ const TruthOrDareGame = () => {
                     </div>
 
                     <div className="relative w-80 h-80 mx-auto mb-8">
-  {/* Неоновое свечение */}
-  <div className="absolute inset-0 rounded-full blur-3xl opacity-60"
-       style={{ 
-         background: isSpinning 
-           ? 'conic-gradient(from 0deg, #00f, #f0f, #f00, #ff0, #0ff, #00f)' 
-           : 'radial-gradient(circle, rgba(255,0,255,0.4), transparent)'
-       }} />
-  
-  <div 
-    className={`relative w-full h-full rounded-full border-8 shadow-2xl transition-transform duration-3000 ease-out ${
-      isSpinning ? 'animate-spin-slow' : ''
-    }`}
-    style={{ 
-      transform: `rotate(${wheelRotation}deg)`,
-      borderColor: '#fff',
-      boxShadow: '0 0 40px rgba(255,255,255,0.5), inset 0 0 60px rgba(255,255,255,0.2)'
-    }}
-  >
-    {/* Внутренний градиент */}
-    <div className="absolute inset-0 rounded-full overflow-hidden"
-         style={{ background: 'conic-gradient(from 0deg, #06b6d4 0deg 180deg, #f97316 180deg 360deg)' }}>
-      
-      {/* Текст и иконки ПРАВДА */}
-      <div className="absolute top-[25%] left-1/2 -translate-x-1/2 text-center transform -rotate-45">
-        <div className="relative">
-          <div className="text-6xl mb-3 filter drop-shadow-[0_0_20px_rgba(255,255,255,0.9)]">💬</div>
-          <div className="text-white font-black text-3xl tracking-wider"
-               style={{ 
-                 textShadow: '0 0 20px rgba(255,255,255,0.8), 0 0 40px rgba(6,182,212,0.6)',
-                 fontFamily: 'Impact, sans-serif'
-               }}>
-            ПРАВДА
-          </div>
-        </div>
-      </div>
-      
-      {/* Текст и иконки ДЕЙСТВИЕ */}
-      <div className="absolute bottom-[25%] left-1/2 -translate-x-1/2 text-center transform rotate-45">
-        <div className="relative">
-          <div className="text-6xl mb-3 filter drop-shadow-[0_0_20px_rgba(255,255,255,0.9)]">🔥</div>
-          <div className="text-white font-black text-3xl tracking-wider"
-               style={{ 
-                 textShadow: '0 0 20px rgba(255,255,255,0.8), 0 0 40px rgba(249,115,22,0.6)',
-                 fontFamily: 'Impact, sans-serif'
-               }}>
-            ДЕЙСТВИЕ
-          </div>
-        </div>
-      </div>
+                      {/* Неоновое свечение */}
+                      <div className="absolute inset-0 rounded-full blur-3xl opacity-60"
+                        style={{
+                          background: isSpinning
+                            ? 'conic-gradient(from 0deg, #00f, #f0f, #f00, #ff0, #0ff, #00f)'
+                            : 'radial-gradient(circle, rgba(255,0,255,0.4), transparent)'
+                        }} />
 
-      {/* Сегменты с границами */}
-      <div className="absolute inset-0">
-        {[0, 90, 180, 270].map((angle) => (
-          <div
-            key={angle}
-            className="absolute top-1/2 left-1/2 w-full h-0.5 bg-white/40 origin-left"
-            style={{ transform: `translate(-50%, -50%) rotate(${angle}deg)` }}
-          />
-        ))}
-      </div>
-    </div>
+                      <div
+                        className={`relative w-full h-full rounded-full border-8 shadow-2xl transition-transform duration-3000 ease-out ${isSpinning ? 'animate-spin-slow' : ''
+                          }`}
+                        style={{
+                          transform: `rotate(${wheelRotation}deg)`,
+                          borderColor: '#fff',
+                          boxShadow: '0 0 40px rgba(255,255,255,0.5), inset 0 0 60px rgba(255,255,255,0.2)'
+                        }}
+                      >
+                        {/* Внутренний градиент */}
+                        <div className="absolute inset-0 rounded-full overflow-hidden"
+                          style={{ background: 'conic-gradient(from 0deg, #06b6d4 0deg 180deg, #f97316 180deg 360deg)' }}>
 
-    {/* Центральная кнопка */}
-    <div className="absolute top-1/2 left-1/2 w-28 h-28 -translate-x-1/2 -translate-y-1/2 z-10">
-      <div className="w-full h-full rounded-full flex items-center justify-center relative"
-           style={{ 
-             background: 'radial-gradient(circle at 30% 30%, #fbbf24, #f59e0b, #d97706)',
-             boxShadow: '0 0 30px rgba(251,191,36,0.8), inset 0 -4px 20px rgba(0,0,0,0.3), inset 0 4px 10px rgba(255,255,255,0.5)'
-           }}>
-        <Zap className="w-14 h-14 text-white drop-shadow-lg animate-pulse" 
-             style={{ filter: 'drop-shadow(0 0 10px rgba(255,255,255,0.8))' }} />
-        {/* Кольца внутри */}
-        <div className="absolute inset-2 rounded-full border-4 border-white/30" />
-        <div className="absolute inset-4 rounded-full border-2 border-white/20" />
-      </div>
-    </div>
-  </div>
+                          {/* Текст и иконки ПРАВДА */}
+                          <div className="absolute top-[25%] left-1/2 -translate-x-1/2 text-center transform -rotate-45">
+                            <div className="relative">
+                              <div className="text-6xl mb-3 filter drop-shadow-[0_0_20px_rgba(255,255,255,0.9)]">💬</div>
+                              <div className="text-white font-black text-3xl tracking-wider"
+                                style={{
+                                  textShadow: '0 0 20px rgba(255,255,255,0.8), 0 0 40px rgba(6,182,212,0.6)',
+                                  fontFamily: 'Impact, sans-serif'
+                                }}>
+                                ПРАВДА
+                              </div>
+                            </div>
+                          </div>
 
-  {/* Улучшенная стрелка */}
-  <div className="absolute -top-10 left-1/2 -translate-x-1/2 z-20">
-    <div className="relative animate-bounce">
-      <div className="absolute -inset-4 blur-xl bg-yellow-400/60 rounded-full" />
-      <div className="relative">
-        <div className="w-0 h-0 border-l-[24px] border-r-[24px] border-t-[36px] border-l-transparent border-r-transparent"
-             style={{ 
-               borderTopColor: '#fbbf24',
-               filter: 'drop-shadow(0 6px 12px rgba(251,191,36,0.9))'
-             }} />
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1 h-8 bg-gradient-to-b from-yellow-300 to-transparent" />
-      </div>
-    </div>
-  </div>
-</div>
+                          {/* Текст и иконки ДЕЙСТВИЕ */}
+                          <div className="absolute bottom-[25%] left-1/2 -translate-x-1/2 text-center transform rotate-45">
+                            <div className="relative">
+                              <div className="text-6xl mb-3 filter drop-shadow-[0_0_20px_rgba(255,255,255,0.9)]">🔥</div>
+                              <div className="text-white font-black text-3xl tracking-wider"
+                                style={{
+                                  textShadow: '0 0 20px rgba(255,255,255,0.8), 0 0 40px rgba(249,115,22,0.6)',
+                                  fontFamily: 'Impact, sans-serif'
+                                }}>
+                                ДЕЙСТВИЕ
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Сегменты с границами */}
+                          <div className="absolute inset-0">
+                            {[0, 90, 180, 270].map((angle) => (
+                              <div
+                                key={angle}
+                                className="absolute top-1/2 left-1/2 w-full h-0.5 bg-white/40 origin-left"
+                                style={{ transform: `translate(-50%, -50%) rotate(${angle}deg)` }}
+                              />
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* Центральная кнопка */}
+                        <div className="absolute top-1/2 left-1/2 w-28 h-28 -translate-x-1/2 -translate-y-1/2 z-10">
+                          <div className="w-full h-full rounded-full flex items-center justify-center relative"
+                            style={{
+                              background: 'radial-gradient(circle at 30% 30%, #fbbf24, #f59e0b, #d97706)',
+                              boxShadow: '0 0 30px rgba(251,191,36,0.8), inset 0 -4px 20px rgba(0,0,0,0.3), inset 0 4px 10px rgba(255,255,255,0.5)'
+                            }}>
+                            <Zap className="w-14 h-14 text-white drop-shadow-lg animate-pulse"
+                              style={{ filter: 'drop-shadow(0 0 10px rgba(255,255,255,0.8))' }} />
+                            {/* Кольца внутри */}
+                            <div className="absolute inset-2 rounded-full border-4 border-white/30" />
+                            <div className="absolute inset-4 rounded-full border-2 border-white/20" />
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Улучшенная стрелка */}
+                      <div className="absolute -top-10 left-1/2 -translate-x-1/2 z-20">
+                        <div className="relative animate-bounce">
+                          <div className="absolute -inset-4 blur-xl bg-yellow-400/60 rounded-full" />
+                          <div className="relative">
+                            <div className="w-0 h-0 border-l-[24px] border-r-[24px] border-t-[36px] border-l-transparent border-r-transparent"
+                              style={{
+                                borderTopColor: '#fbbf24',
+                                filter: 'drop-shadow(0 6px 12px rgba(251,191,36,0.9))'
+                              }} />
+                            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1 h-8 bg-gradient-to-b from-yellow-300 to-transparent" />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
 
                     {selectedType && !isSpinning && (
                       <div className="mb-6 p-6 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-2xl animate-pulse">
@@ -967,7 +955,7 @@ const TruthOrDareGame = () => {
                       >
                         <RotateCcw className="mr-3 w-8 h-8" /> Պտտել
                       </Button>
-                      
+
                       <Button
                         onClick={() => {
                           setCurrentPlayer(null);
@@ -1017,7 +1005,7 @@ const TruthOrDareGame = () => {
     return (
       <div className="min-h-screen bg-gradient-to-br from-purple-900 via-pink-900 to-red-900 p-8 flex items-center justify-center">
         <Confetti />
-        
+
         <div className="max-w-4xl w-full">
           <Card className={`p-12 bg-gradient-to-br ${categoryColor.bg} border-4 border-white/30 shadow-2xl transform animate-scale-in`}>
             <div className="text-center mb-8">
@@ -1054,7 +1042,7 @@ const TruthOrDareGame = () => {
               >
                 <Award className="mr-4 w-10 h-10" /> Կատարեցի!
               </Button>
-              
+
               <Button
                 onClick={() => completeChallenge(false)}
                 className="bg-white/20 hover:bg-white/30 px-12 py-8 text-2xl font-bold"
@@ -1070,11 +1058,11 @@ const TruthOrDareGame = () => {
 
   if (gameState === 'stats') {
     const randomPunishment = winnerPunishments[Math.floor(Math.random() * winnerPunishments.length)];
-    
+
     return (
       <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900 p-8">
         <Confetti />
-        
+
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-12">
             <Trophy className="w-32 h-32 mx-auto mb-6 text-yellow-300 animate-bounce" />
@@ -1114,21 +1102,21 @@ const TruthOrDareGame = () => {
               <div className="text-center">
                 <Gift className="w-24 h-24 mx-auto mb-6 text-white animate-bounce" />
                 <h2 className="text-5xl font-black text-white mb-6">🎁 Հաղթողի ցանկությունը 🎁</h2>
-                
+
                 <div className="mb-8">
                   <p className="text-3xl text-white mb-4">Պարտվող:</p>
                   <div className="text-8xl mb-2">{loserForPunishment.avatar}</div>
                   <h3 className="text-5xl font-black text-white">{loserForPunishment.name}</h3>
                 </div>
-                
+
                 <div className="bg-white/20 backdrop-blur-xl rounded-3xl p-10 border-4 border-white/30">
                   <p className="text-4xl font-bold text-white leading-relaxed">
                     {randomPunishment}
                   </p>
                 </div>
-                
+
                 <p className="text-2xl text-white/80 mt-6">
-                Կատարիր այս առաջադրանքը հաղթողի համար։ 🎯
+                  Կատարիր այս առաջադրանքը հաղթողի համար։ 🎯
                 </p>
               </div>
             </Card>
@@ -1170,14 +1158,13 @@ const TruthOrDareGame = () => {
             </h2>
             <div className="space-y-4">
               {[...players].sort((a, b) => b.totalScore - a.totalScore).map((player, index) => (
-                <Card 
-                  key={player.id} 
-                  className={`p-6 ${
-                    index === 0 ? 'bg-gradient-to-r from-yellow-400 to-orange-500 border-4 border-yellow-300' :
-                    index === 1 ? 'bg-gradient-to-r from-gray-300 to-gray-400 border-2 border-gray-400' :
-                    index === 2 ? 'bg-gradient-to-r from-orange-400 to-orange-600 border-2 border-orange-500' :
-                    'bg-white/10 backdrop-blur-xl border-2 border-white/20'
-                  }`}
+                <Card
+                  key={player.id}
+                  className={`p-6 ${index === 0 ? 'bg-gradient-to-r from-yellow-400 to-orange-500 border-4 border-yellow-300' :
+                      index === 1 ? 'bg-gradient-to-r from-gray-300 to-gray-400 border-2 border-gray-400' :
+                        index === 2 ? 'bg-gradient-to-r from-orange-400 to-orange-600 border-2 border-orange-500' :
+                          'bg-white/10 backdrop-blur-xl border-2 border-white/20'
+                    }`}
                 >
                   <div className="flex items-center gap-6">
                     <div className="text-center min-w-[60px]">
@@ -1186,9 +1173,9 @@ const TruthOrDareGame = () => {
                       {index === 2 && <Star className="w-10 h-10 text-white mx-auto mb-2" />}
                       <p className="text-3xl font-black text-white">#{index + 1}</p>
                     </div>
-                    
+
                     <div className="text-5xl">{player.avatar}</div>
-                    
+
                     <div className="flex-1">
                       <p className="text-3xl font-black text-white mb-1">{player.name}</p>
                       <div className="flex gap-6 text-lg">
@@ -1196,13 +1183,13 @@ const TruthOrDareGame = () => {
                         <span className="text-white/80">🔥 {player.daresCompleted} Действие</span>
                       </div>
                     </div>
-                    
+
                     <div className="text-right">
                       <p className="text-5xl font-black text-white">{player.totalScore}</p>
                       <p className="text-lg text-white/70">միավոր</p>
                     </div>
                   </div>
-                  
+
                   {player.achievements.length > 0 && (
                     <div className="mt-4 flex gap-2">
                       {player.achievements.includes('truth_master') && (
@@ -1234,7 +1221,7 @@ const TruthOrDareGame = () => {
             >
               <RotateCcw className="mr-3 w-8 h-8" /> Նոր Խաղ
             </Button>
-            
+
             <Button
               onClick={() => setGameState('intro')}
               className="bg-white/10 hover:bg-white/20 px-12 py-6 text-2xl font-bold"

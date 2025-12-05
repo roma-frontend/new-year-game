@@ -1376,7 +1376,7 @@ useEffect(() => {
                         {/* Hero Section */}
                         <div className="text-center space-y-6 max-w-4xl">
                             <div className="relative inline-block">
-                                <h1 className="text-7xl md:text-9xl font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 animate-gradient-slow mb-4">
+                                <h1 className="text-[80px] md:text-[100px] font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 animate-gradient-slow mb-4">
                                     🎬 Կինո-Քվիզ
                                 </h1>
                                 <div className="absolute -top-4 -right-4 text-3xl animate-bounce">✨</div>

@@ -56,7 +56,7 @@ const GuessTheMelody = () => {
   const [songRevealed, setSongRevealed] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
   const [shuffledSongs, setShuffledSongs] = useState<Song[]>([]);
-  
+
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const startTimeRef = useRef<number>(0);
@@ -111,7 +111,7 @@ const GuessTheMelody = () => {
     // Initialize audio element
     audioRef.current = new Audio();
     audioRef.current.volume = volume;
-    
+
     return () => {
       if (audioRef.current) {
         audioRef.current.pause();
@@ -186,13 +186,13 @@ const GuessTheMelody = () => {
       setIsPlaying(true);
       setSongRevealed(false);
       startTimeRef.current = Date.now();
-      
+
       if (audioRef.current) {
         audioRef.current.src = shuffled[0].file;
         audioRef.current.volume = volume;
-        
+
         const playPromise = audioRef.current.play();
-        
+
         if (playPromise !== undefined) {
           playPromise.catch(e => {
             console.log('Audio play failed:', e);
@@ -225,18 +225,18 @@ const GuessTheMelody = () => {
     const currentSong = shuffledSongs[currentSongIndex];
     const basePoints = difficultyPoints[currentSong.difficulty][difficulty];
     const responseTime = 45 - timeLeft;
-    
+
     setSongRevealed(true);
-    
+
     setPlayers(players.map(p => {
       if (p.id === playerId) {
         const newStreak = p.streak + 1;
         const finalPoints = calculatePoints(basePoints, timeLeft, newStreak);
         const newCombo = newStreak >= 2 ? newStreak : 0;
-        
+
         setRoundWinner(p);
         setLastGuessTime(responseTime);
-        
+
         return {
           ...p,
           score: p.score + finalPoints,
@@ -272,14 +272,14 @@ const GuessTheMelody = () => {
     setHintLevel(0);
     setPowerUpActive(false);
     setSongRevealed(false);
-    
+
     if (currentSongIndex < shuffledSongs.length - 1) {
       setCurrentSongIndex(currentSongIndex + 1);
       setTimeLeft(45);
       setGameState('playing');
       setIsPlaying(true);
       setGameStats(prev => ({ ...prev, songsPlayed: prev.songsPlayed + 1 }));
-      
+
       if (audioRef.current) {
         audioRef.current.src = shuffledSongs[currentSongIndex + 1].file;
         audioRef.current.play().catch(e => console.log('Audio play failed:', e));
@@ -297,35 +297,35 @@ const GuessTheMelody = () => {
   const finishGame = () => {
     setIsPlaying(false);
     if (audioRef.current) audioRef.current.pause();
-    
+
     const sortedPlayers = [...players].sort((a, b) => b.score - a.score);
     const gameWinner = sortedPlayers[0];
     const gameLoser = sortedPlayers[sortedPlayers.length - 1];
-    
+
     setWinner(gameWinner);
     setLoser(gameLoser);
     setWish(wishes[Math.floor(Math.random() * wishes.length)]);
-    
+
     const totalTime = (Date.now() - startTimeRef.current) / 1000;
     setGameStats(prev => ({
       ...prev,
       totalTime,
       avgResponseTime: totalTime / (currentSongIndex + 1)
     }));
-    
+
     setGameState('finished');
     setShowConfetti(true);
   };
 
   const resetGame = () => {
     setGameState('setup');
-    setPlayers(players.map(p => ({ 
-      ...p, 
-      score: 0, 
-      streak: 0, 
-      combo: 0, 
+    setPlayers(players.map(p => ({
+      ...p,
+      score: 0,
+      streak: 0,
+      combo: 0,
       totalGuesses: 0,
-      fastestGuess: undefined 
+      fastestGuess: undefined
     })));
     setCurrentSongIndex(0);
     setTimeLeft(45);
@@ -349,7 +349,7 @@ const GuessTheMelody = () => {
     }
     return '';
   };
-  
+
   const Confetti = () => {
     if (!showConfetti || !isMounted) return null;
     return (
@@ -359,7 +359,7 @@ const GuessTheMelody = () => {
           const Icon = icons[i % icons.length];
           const colors = ['text-yellow-400', 'text-pink-400', 'text-purple-400', 'text-blue-400', 'text-red-400', 'text-green-400'];
           const color = colors[i % colors.length];
-          
+
           return (
             <div
               key={i}
@@ -402,22 +402,22 @@ const GuessTheMelody = () => {
     return (
       <div className="min-h-screen bg-gradient-to-br from-purple-900 via-pink-900 to-red-900 flex items-center justify-center p-8 relative overflow-hidden">
         <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAxMCAwIEwgMCAwIDAgMTAiIGZpbGw9Im5vbmUiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS1vcGFjaXR5PSIwLjEiIHN0cm9rZS13aWR0aD0iMSIvPjwvcGF0dGVybj48L2RlZnM+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0idXJsKCNncmlkKSIvPjwvc3ZnPg==')] opacity-20"></div>
-        
+
         <Fireworks />
-        
+
         <div className="max-w-4xl w-full text-center relative z-10">
           <div className="mb-12 animate-bounce">
             <Mic2 className="w-40 h-40 mx-auto text-yellow-300 drop-shadow-2xl" />
           </div>
-          
+
           <h1 className="text-[80px] font-black mb-6 bg-gradient-to-r from-yellow-300 via-pink-300 to-purple-300 bg-clip-text text-transparent drop-shadow-2xl animate-pulse">
             Գուշակիր Մեղեդին
           </h1>
-          
+
           <p className="text-3xl text-white/90 mb-12 font-bold animate-fade-in">
             🎵 Երաժշտական Մրցույթ 🎵
           </p>
-          
+
           <div className="grid grid-cols-3 gap-6 mb-12">
             <Card className="p-6 bg-white/10 backdrop-blur-xl border-2 border-white/20 hover:bg-white/20 transition-all transform hover:scale-110">
               <Trophy className="w-16 h-16 mx-auto mb-3 text-yellow-300" />
@@ -432,7 +432,7 @@ const GuessTheMelody = () => {
               <p className="text-white font-bold text-lg">Streak & Combo</p>
             </Card>
           </div>
-          
+
           <Button
             onClick={() => setGameState('setup')}
             className="bg-gradient-to-r from-yellow-400 via-pink-500 to-purple-600 hover:from-yellow-500 hover:via-pink-600 hover:to-purple-700 text-white !px-16 py-10 text-3xl font-black rounded-full shadow-2xl transform hover:scale-110 transition-all animate-pulse"
@@ -441,23 +441,15 @@ const GuessTheMelody = () => {
           </Button>
         </div>
         <div className="fixed left-[2rem] top-[2rem]">
-          <button
-            onClick={() => router.push("/")}
-            className="group relative flex px-8 py-4 text-xl font-bold rounded-xl overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-xl h-[3rem] bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-600 hover:to-blue-700 text-white"
+          <Button
+            onClick={() => {
+              router.push('/');
+            }}
+            className="bg-white/10 backdrop-blur-lg hover:bg-white/20 border border-white/20 hover:scale-105 transition-all group"
           >
-            <span className="relative z-10 flex items-center gap-3">
-              <svg 
-                className="w-6 h-6 transform group-hover:-translate-x-1 transition-transform duration-300" 
-                fill="none" 
-                stroke="currentColor" 
-                viewBox="0 0 24 24"
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-              </svg>
-              Գլխավոր էջ
-              <Sparkles className="w-5 h-5 animate-pulse" />
-            </span>
-          </button>
+            <span className="group-hover:-translate-x-1 transition-transform">←</span>
+            <span className="ml-2">Գլխավոր</span>
+          </Button>
         </div>
       </div>
     );
@@ -483,8 +475,8 @@ const GuessTheMelody = () => {
                 className="text-xl bg-white/20 border-white/30 text-white placeholder:text-white/50 py-6"
                 maxLength={20}
               />
-              <Button 
-                onClick={addPlayer} 
+              <Button
+                onClick={addPlayer}
                 disabled={players.length >= 8}
                 className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 px-8 text-lg font-bold"
               >
@@ -492,12 +484,12 @@ const GuessTheMelody = () => {
               </Button>
             </div>
 
-            
+
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
               {players.map((player, index) => (
-                <div 
-                  key={player.id} 
+                <div
+                  key={player.id}
                   className="group relative p-6 bg-gradient-to-r from-purple-500/30 to-pink-500/30 rounded-xl border-2 border-white/30 hover:border-white/60 transition-all transform hover:scale-105"
                 >
                   <div className="flex items-center justify-between">
@@ -538,24 +530,16 @@ const GuessTheMelody = () => {
         </div>
 
         <div className="fixed left-[2rem] top-[2rem]">
-                  <button
-                    onClick={() => router.push("/")}
-                    className="group relative flex px-8 py-4 text-xl font-bold rounded-xl overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-xl h-[3rem] bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-600 hover:to-blue-700 text-white"
-                  >
-                    <span className="relative z-10 flex items-center gap-3">
-                      <svg 
-                        className="w-6 h-6 transform group-hover:-translate-x-1 transition-transform duration-300" 
-                        fill="none" 
-                        stroke="currentColor" 
-                        viewBox="0 0 24 24"
-                      >
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                      </svg>
-                      Գլխավոր էջ
-                      <Sparkles className="w-5 h-5 animate-pulse" />
-                    </span>
-                  </button>
-                </div>
+          <Button
+            onClick={() => {
+              router.push('/');
+            }}
+            className="bg-white/10 backdrop-blur-lg hover:bg-white/20 border border-white/20 hover:scale-105 transition-all group"
+          >
+            <span className="group-hover:-translate-x-1 transition-transform">←</span>
+            <span className="ml-2">Գլխավոր</span>
+          </Button>
+        </div>
       </div>
     );
   }
@@ -567,7 +551,7 @@ const GuessTheMelody = () => {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-900 via-indigo-900 to-purple-900 p-6 relative overflow-hidden">
         <Confetti />
-        
+
         <div className="absolute inset-0 opacity-10">
           <div className="absolute top-20 left-20 w-96 h-96 bg-pink-500 rounded-full blur-3xl animate-pulse"></div>
           <div className="absolute bottom-20 right-20 w-96 h-96 bg-purple-500 rounded-full blur-3xl animate-pulse"></div>
@@ -583,7 +567,7 @@ const GuessTheMelody = () => {
               >
                 {isPlaying ? <Pause className="w-8 h-8" /> : <Play className="w-8 h-8" />}
               </Button>
-              
+
               <div className="flex items-center gap-3 bg-white/10 backdrop-blur-xl px-6 py-3 rounded-full border-2 border-white/20">
                 {volume > 0 ? <Volume2 className="text-white" /> : <VolumeX className="text-white" />}
                 <input
@@ -604,7 +588,7 @@ const GuessTheMelody = () => {
                   Երգ {currentSongIndex + 1} / {shuffledSongs.length}
                 </span>
               </div>
-              
+
               {!powerUpActive && (
                 <Button
                   onClick={activatePowerUp}
@@ -613,7 +597,7 @@ const GuessTheMelody = () => {
                   <Zap className="mr-2" /> x2 Power-Up
                 </Button>
               )}
-              
+
               {powerUpActive && (
                 <div className="bg-gradient-to-r from-yellow-500 to-orange-500 px-6 py-4 rounded-full border-4 border-yellow-300 animate-pulse">
                   <span className="text-xl font-black text-white flex items-center gap-2">
@@ -639,12 +623,11 @@ const GuessTheMelody = () => {
                       🎵 Գուշակեք Երգը 🎵
                     </span>
                   )}
-                  <div className={`px-4 py-1 rounded-full text-sm font-bold ${
-                    currentSong.difficulty === 'easy' ? 'bg-green-500' :
-                    currentSong.difficulty === 'medium' ? 'bg-yellow-500' : 'bg-red-500'
-                  }`}>
+                  <div className={`px-4 py-1 rounded-full text-sm font-bold ${currentSong.difficulty === 'easy' ? 'bg-green-500' :
+                      currentSong.difficulty === 'medium' ? 'bg-yellow-500' : 'bg-red-500'
+                    }`}>
                     {currentSong.difficulty === 'easy' ? '⭐ Հեշտ' :
-                     currentSong.difficulty === 'medium' ? '⭐⭐ Միջին' : '⭐⭐⭐ Բարդ'}
+                      currentSong.difficulty === 'medium' ? '⭐⭐ Միջին' : '⭐⭐⭐ Բարդ'}
                   </div>
                 </div>
               </div>
@@ -708,14 +691,13 @@ const GuessTheMelody = () => {
           {/* Players Grid */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
             {players.map((player) => (
-              <Card 
-                key={player.id} 
-                className={`relative overflow-hidden transform transition-all hover:scale-105 ${
-                  player.combo > 0 ? 'ring-4 ring-yellow-400 animate-pulse' : ''
-                }`}
+              <Card
+                key={player.id}
+                className={`relative overflow-hidden transform transition-all hover:scale-105 ${player.combo > 0 ? 'ring-4 ring-yellow-400 animate-pulse' : ''
+                  }`}
               >
                 <div className="absolute inset-0 bg-gradient-to-br from-purple-600/30 to-pink-600/30 backdrop-blur-xl"></div>
-                
+
                 {player.combo >= 2 && (
                   <div className="absolute top-2 right-2 bg-gradient-to-r from-yellow-400 to-orange-500 px-3 py-1 rounded-full flex items-center gap-1 z-10 animate-bounce">
                     <Flame className="w-4 h-4" />
@@ -792,80 +774,72 @@ const GuessTheMelody = () => {
 
           {/* Live Stats */}
           {showStats && (
-  <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-    <Card className="max-w-5xl w-full p-8 bg-white/10 backdrop-blur-xl border-4 border-white/30 relative max-h-[90vh] overflow-y-auto">
-      <button
-        onClick={() => setShowStats(false)}
-        className="absolute top-4 right-4 text-white hover:text-red-400 transition-colors"
-      >
-        <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-        </svg>
-      </button>
-      
-      <h3 className="text-4xl font-black text-white mb-6 flex items-center gap-2">
-        <TrendingUp className="w-10 h-10" /> Կենդանի Վիճակագրություն
-      </h3>
-      
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {players.map(player => (
-          <div key={player.id} className="bg-gradient-to-br from-purple-600/40 to-pink-600/40 backdrop-blur-xl p-6 rounded-xl border-2 border-white/20">
-            <div className="flex items-center gap-3 mb-4">
-              <span className="text-4xl">{player.avatar}</span>
-              <span className="text-white font-black text-xl">{player.name}</span>
+            <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+              <Card className="max-w-5xl w-full p-8 bg-white/10 backdrop-blur-xl border-4 border-white/30 relative max-h-[90vh] overflow-y-auto">
+                <button
+                  onClick={() => setShowStats(false)}
+                  className="absolute top-4 right-4 text-white hover:text-red-400 transition-colors"
+                >
+                  <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+
+                <h3 className="text-4xl font-black text-white mb-6 flex items-center gap-2">
+                  <TrendingUp className="w-10 h-10" /> Կենդանի Վիճակագրություն
+                </h3>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {players.map(player => (
+                    <div key={player.id} className="bg-gradient-to-br from-purple-600/40 to-pink-600/40 backdrop-blur-xl p-6 rounded-xl border-2 border-white/20">
+                      <div className="flex items-center gap-3 mb-4">
+                        <span className="text-4xl">{player.avatar}</span>
+                        <span className="text-white font-black text-xl">{player.name}</span>
+                      </div>
+                      <div className="text-lg text-white/90 space-y-2">
+                        <div className="flex items-center gap-2">
+                          <Clock className="w-5 h-5 text-blue-300" />
+                          <span>Ամենաարագ: <strong className="text-yellow-300">{player.fastestGuess?.toFixed(1) || '-'}վ</strong></span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Star className="w-5 h-5 text-green-300" />
+                          <span>Ճիշտ: <strong className="text-yellow-300">{player.totalGuesses}</strong></span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Flame className="w-5 h-5 text-orange-300" />
+                          <span>Շարք: <strong className="text-yellow-300">{player.streak}</strong></span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Trophy className="w-5 h-5 text-purple-300" />
+                          <span>Միավոր: <strong className="text-yellow-300">{player.score}</strong></span>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <Button
+                  onClick={() => setShowStats(false)}
+                  className="w-full mt-6 bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 py-6 text-xl font-bold"
+                >
+                  Փակել
+                </Button>
+              </Card>
             </div>
-            <div className="text-lg text-white/90 space-y-2">
-              <div className="flex items-center gap-2">
-                <Clock className="w-5 h-5 text-blue-300" />
-                <span>Ամենաարագ: <strong className="text-yellow-300">{player.fastestGuess?.toFixed(1) || '-'}վ</strong></span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Star className="w-5 h-5 text-green-300" />
-                <span>Ճիշտ: <strong className="text-yellow-300">{player.totalGuesses}</strong></span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Flame className="w-5 h-5 text-orange-300" />
-                <span>Շարք: <strong className="text-yellow-300">{player.streak}</strong></span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Trophy className="w-5 h-5 text-purple-300" />
-                <span>Միավոր: <strong className="text-yellow-300">{player.score}</strong></span>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
-      
-      <Button
-        onClick={() => setShowStats(false)}
-        className="w-full mt-6 bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 py-6 text-xl font-bold"
-      >
-        Փակել
-      </Button>
-    </Card>
-  </div>
-)}
+          )}
         </div>
 
         <div className="fixed left-[2rem] top-[2rem]">
-                  <button
-                    onClick={() => router.push("/")}
-                    className="group relative flex px-8 py-4 text-xl font-bold rounded-xl overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-xl h-[3rem] bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-600 hover:to-blue-700 text-white"
-                  >
-                    <span className="relative z-10 flex items-center gap-3">
-                      <svg 
-                        className="w-6 h-6 transform group-hover:-translate-x-1 transition-transform duration-300" 
-                        fill="none" 
-                        stroke="currentColor" 
-                        viewBox="0 0 24 24"
-                      >
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                      </svg>
-                      Գլխավոր էջ
-                      <Sparkles className="w-5 h-5 animate-pulse" />
-                    </span>
-                  </button>
-                </div>
+          <Button
+            onClick={() => {
+              router.push('/');
+            }}
+            className="bg-white/10 backdrop-blur-lg hover:bg-white/20 border border-white/20 hover:scale-105 transition-all group"
+          >
+            <span className="group-hover:-translate-x-1 transition-transform">←</span>
+            <span className="ml-2">Գլխավոր</span>
+          </Button>
+        </div>
       </div>
     );
   }
@@ -875,7 +849,7 @@ const GuessTheMelody = () => {
     return (
       <div className="min-h-screen bg-gradient-to-br from-teal-900 via-cyan-900 to-blue-900 p-8 flex items-center justify-center">
         {roundWinner && <Confetti />}
-        
+
         <div className="max-w-4xl w-full">
           <Card className="p-12 bg-white/10 backdrop-blur-2xl border-4 border-white/30 text-center">
             {roundWinner ? (
@@ -884,14 +858,14 @@ const GuessTheMelody = () => {
                 <h2 className="text-6xl font-black text-white mb-4">Շնորհավորում եմ!</h2>
                 <div className="text-5xl mb-6">{roundWinner.avatar}</div>
                 <h3 className="text-4xl font-black text-yellow-300 mb-6">{roundWinner.name}</h3>
-                
+
                 <div className="bg-blue-500/20 px-6 py-4 rounded-xl mb-6">
                   <Music className="w-8 h-8 mx-auto mb-2 text-blue-300" />
                   <p className="text-2xl font-bold text-white">
-  {shuffledSongs[currentSongIndex].title} - {shuffledSongs[currentSongIndex].artist}
-</p>
+                    {shuffledSongs[currentSongIndex].title} - {shuffledSongs[currentSongIndex].artist}
+                  </p>
                 </div>
-                
+
                 <div className="grid grid-cols-3 gap-6 mb-8">
                   <div className="bg-white/20 p-6 rounded-xl">
                     <Clock className="w-12 h-12 mx-auto mb-2 text-blue-300" />
@@ -915,12 +889,12 @@ const GuessTheMelody = () => {
                 <Clock className="w-32 h-32 mx-auto mb-6 text-gray-400" />
                 <h2 className="text-5xl font-black text-white mb-4">Ժամանակը Ավարտվեց!</h2>
                 <p className="text-2xl text-white/70 mb-4">Ոչ ոք չգուշակեց այս երգը</p>
-                
+
                 <div className="bg-blue-500/20 px-6 py-4 rounded-xl mb-8">
                   <Music className="w-8 h-8 mx-auto mb-2 text-blue-300" />
                   <p className="text-2xl font-bold text-white">
-  Պատասխանը: {shuffledSongs[currentSongIndex].title} - {shuffledSongs[currentSongIndex].artist}
-</p>
+                    Պատասխանը: {shuffledSongs[currentSongIndex].title} - {shuffledSongs[currentSongIndex].artist}
+                  </p>
                 </div>
               </>
             )}
@@ -930,10 +904,9 @@ const GuessTheMelody = () => {
               {[...players].sort((a, b) => b.score - a.score).map((player, index) => (
                 <div
                   key={player.id}
-                  className={`flex items-center justify-between p-4 rounded-xl ${
-                    index === 0 ? 'bg-gradient-to-r from-yellow-500/30 to-orange-500/30 border-2 border-yellow-400' :
-                    'bg-white/10'
-                  }`}
+                  className={`flex items-center justify-between p-4 rounded-xl ${index === 0 ? 'bg-gradient-to-r from-yellow-500/30 to-orange-500/30 border-2 border-yellow-400' :
+                      'bg-white/10'
+                    }`}
                 >
                   <div className="flex items-center gap-4">
                     <span className="text-3xl font-black text-white">{index + 1}</span>
@@ -968,36 +941,28 @@ const GuessTheMelody = () => {
         </div>
 
         <div className="fixed left-[2rem] top-[2rem]">
-                  <button
-                    onClick={() => router.push("/")}
-                    className="group relative flex px-8 py-4 text-xl font-bold rounded-xl overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-xl h-[3rem] bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-600 hover:to-blue-700 text-white"
-                  >
-                    <span className="relative z-10 flex items-center gap-3">
-                      <svg 
-                        className="w-6 h-6 transform group-hover:-translate-x-1 transition-transform duration-300" 
-                        fill="none" 
-                        stroke="currentColor" 
-                        viewBox="0 0 24 24"
-                      >
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                      </svg>
-                      Գլխավոր էջ
-                      <Sparkles className="w-5 h-5 animate-pulse" />
-                    </span>
-                  </button>
-                </div>
+          <Button
+            onClick={() => {
+              router.push('/');
+            }}
+            className="bg-white/10 backdrop-blur-lg hover:bg-white/20 border border-white/20 hover:scale-105 transition-all group"
+          >
+            <span className="group-hover:-translate-x-1 transition-transform">←</span>
+            <span className="ml-2">Գլխավոր</span>
+          </Button>
+        </div>
       </div>
     );
   }
 
   if (gameState === 'finished' && winner && loser) {
     const topThree = [...players].sort((a, b) => b.score - a.score).slice(0, 3);
-    
+
     return (
       <div className="min-h-screen bg-gradient-to-br from-yellow-600 via-orange-600 to-red-600 p-8 relative overflow-hidden">
         <Confetti />
         <Fireworks />
-        
+
         <div className="absolute inset-0 opacity-20">
           {isMounted && [...Array(10)].map((_, i) => (
             <div
@@ -1020,14 +985,14 @@ const GuessTheMelody = () => {
             <h1 className="text-8xl font-black text-white mb-8 drop-shadow-2xl animate-pulse">
               🏆 ՀԱՂԹՈՂ 🏆
             </h1>
-            
+
             <Card className="p-12 bg-white/95 backdrop-blur-xl border-8 border-yellow-400 shadow-2xl transform hover:scale-105 transition-all">
               <Crown className="w-40 h-40 mx-auto mb-6 text-yellow-500 animate-bounce" />
               <div className="text-8xl mb-6">{winner.avatar}</div>
               <h2 className="text-7xl font-black mb-6 bg-gradient-to-r from-yellow-500 via-orange-500 to-red-500 bg-clip-text text-transparent">
                 {winner.name}
               </h2>
-              
+
               <div className="grid grid-cols-4 gap-6 mb-8">
                 <div className="bg-gradient-to-br from-yellow-400 to-orange-500 p-6 rounded-xl shadow-xl">
                   <Trophy className="w-12 h-12 mx-auto mb-2 text-white" />
@@ -1063,7 +1028,7 @@ const GuessTheMelody = () => {
                     </div>
                   </div>
                 )}
-                
+
                 {topThree[0] && (
                   <div className="flex flex-col items-center">
                     <Crown className="w-16 h-16 text-yellow-400 mb-2 animate-bounce" />
@@ -1075,7 +1040,7 @@ const GuessTheMelody = () => {
                     </div>
                   </div>
                 )}
-                
+
                 {topThree[2] && (
                   <div className="flex flex-col items-center">
                     <div className="text-5xl mb-2">{topThree[2].avatar}</div>
@@ -1099,13 +1064,12 @@ const GuessTheMelody = () => {
               {[...players].sort((a, b) => b.score - a.score).map((player, index) => (
                 <div
                   key={player.id}
-                  className={`p-6 rounded-xl flex items-center justify-between transform hover:scale-105 transition-all ${
-                    index === 0 ? 'bg-gradient-to-r from-yellow-200 to-orange-200 border-4 border-yellow-400' :
-                    index === 1 ? 'bg-gradient-to-r from-gray-200 to-gray-300 border-4 border-gray-400' :
-                    index === 2 ? 'bg-gradient-to-r from-orange-200 to-orange-300 border-4 border-orange-400' :
-                    index === players.length - 1 ? 'bg-gradient-to-r from-red-100 to-pink-100 border-2 border-red-300' :
-                    'bg-gradient-to-r from-purple-100 to-pink-100'
-                  }`}
+                  className={`p-6 rounded-xl flex items-center justify-between transform hover:scale-105 transition-all ${index === 0 ? 'bg-gradient-to-r from-yellow-200 to-orange-200 border-4 border-yellow-400' :
+                      index === 1 ? 'bg-gradient-to-r from-gray-200 to-gray-300 border-4 border-gray-400' :
+                        index === 2 ? 'bg-gradient-to-r from-orange-200 to-orange-300 border-4 border-orange-400' :
+                          index === players.length - 1 ? 'bg-gradient-to-r from-red-100 to-pink-100 border-2 border-red-300' :
+                            'bg-gradient-to-r from-purple-100 to-pink-100'
+                    }`}
                 >
                   <div className="flex items-center gap-6">
                     <div className="text-4xl font-black">
@@ -1177,24 +1141,16 @@ const GuessTheMelody = () => {
         </div>
 
         <div className="fixed left-[2rem] top-[2rem]">
-                  <button
-                    onClick={() => router.push("/")}
-                    className="group relative flex px-8 py-4 text-xl font-bold rounded-xl overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-xl h-[3rem] bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-600 hover:to-blue-700 text-white"
-                  >
-                    <span className="relative z-10 flex items-center gap-3">
-                      <svg 
-                        className="w-6 h-6 transform group-hover:-translate-x-1 transition-transform duration-300" 
-                        fill="none" 
-                        stroke="currentColor" 
-                        viewBox="0 0 24 24"
-                      >
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                      </svg>
-                      Գլխավոր էջ
-                      <Sparkles className="w-5 h-5 animate-pulse" />
-                    </span>
-                  </button>
-                </div>
+          <Button
+            onClick={() => {
+              router.push('/');
+            }}
+            className="bg-white/10 backdrop-blur-lg hover:bg-white/20 border border-white/20 hover:scale-105 transition-all group"
+          >
+            <span className="group-hover:-translate-x-1 transition-transform">←</span>
+            <span className="ml-2">Գլխավոր</span>
+          </Button>
+        </div>
       </div>
     );
   }
