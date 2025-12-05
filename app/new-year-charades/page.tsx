@@ -225,7 +225,7 @@ const NewYearCharades = () => {
     const [playerSearchTerm, setPlayerSearchTerm] = useState('');
     const [showTeamPlayers, setShowTeamPlayers] = useState<string | null>(null);
 
-    // Заглушки для звуков
+    // Заглушки для звуков - ВСЕ ХУКИ useSound ДОЛЖНЫ БЫТЬ НА ВЕРХНЕМ УРОВНЕ
     const [playCorrect] = useSound('/sounds/correct.mp3', { volume: 0.5 });
     const [playIncorrect] = useSound('/sounds/incorrect.mp3', { volume: 0.3 });
     const [playWin] = useSound('/sounds/win.mp3', { volume: 0.6 });
@@ -237,12 +237,37 @@ const NewYearCharades = () => {
     const [playSpecial] = useSound('/sounds/special.mp3', { volume: 0.4 });
     const [playAmbient] = useSound('/sounds/ambient.mp3', { volume: 0.1, loop: true });
 
-
+    // Основные эффекты - ВСЕ useEffects ДОЛЖНЫ БЫТЬ НА ВЕРХНЕМ УРОВНЕ
     useEffect(() => {
-    if (gameState === 'results' && soundEnabled) {
-        playWin();
-    }
-}, [gameState, soundEnabled, playWin]);
+        let interval: NodeJS.Timeout;
+        
+        if (gameState === 'playing' && isGameActive && timeLeft > 0) {
+            interval = setInterval(() => {
+                setTimeLeft(prev => {
+                    if (prev <= 10 && soundEnabled) {
+                        playTimer();
+                    }
+                    
+                    // Если время вышло, завершаем игру
+                    if (prev <= 1) {
+                        endGame();
+                        return 0;
+                    }
+                    
+                    return prev - 1;
+                });
+            }, 1000);
+        }
+        
+        return () => clearInterval(interval);
+    }, [gameState, timeLeft, soundEnabled, isGameActive]);
+
+    // Эффект для звука победы
+    useEffect(() => {
+        if (gameState === 'results' && soundEnabled) {
+            playWin();
+        }
+    }, [gameState, soundEnabled, playWin]);
 
     const categories: Record<string, Category> = {
         movies: {
@@ -934,31 +959,6 @@ const NewYearCharades = () => {
         }, 500);
     };
 
-    // Модифицированный useEffect для таймера
-    useEffect(() => {
-        let interval: NodeJS.Timeout;
-        
-        if (gameState === 'playing' && isGameActive && timeLeft > 0) {
-            interval = setInterval(() => {
-                setTimeLeft(prev => {
-                    if (prev <= 10 && soundEnabled) {
-                        playTimer();
-                    }
-                    
-                    // Если время вышло, завершаем игру
-                    if (prev <= 1) {
-                        endGame();
-                        return 0;
-                    }
-                    
-                    return prev - 1;
-                });
-            }, 1000);
-        }
-        
-        return () => clearInterval(interval);
-    }, [gameState, timeLeft, soundEnabled, isGameActive]);
-
     const toggleCategory = (category: string) => {
         setSelectedCategories(prev =>
             prev.includes(category)
@@ -1298,7 +1298,7 @@ const NewYearCharades = () => {
                         <div className="text-center mb-8">
                             <div className="text-8xl mb-4 animate-pulse">🎭</div>
                             <h1 className="text-6xl font-black text-white mb-3 bg-gradient-to-r from-yellow-300 via-pink-300 to-purple-300 bg-clip-text text-transparent">
-                                Ամանորյա Ալիաս
+                                Ամանորյա Կոկորդիլոս
                             </h1>
                             <p className="text-2xl text-blue-200">Ստեղծեք ձեր սեփական թիմերը և խաղացեք!</p>
                             <div className="flex items-center justify-center gap-2 mt-2">
@@ -1773,7 +1773,7 @@ const NewYearCharades = () => {
                                                                                             players: t.players.filter(p => p.id !== player.id),
                                                                                             captain: t.captain?.id === player.id ?
                                                                                                 (t.players.length > 1 ? t.players.find(p => p.id !== player.id) || null : null)
-                                                                                                : t.captain
+                                                                                                        : t.captain
                                                                                         };
                                                                                     }
                                                                                     return t;
@@ -2409,8 +2409,8 @@ const NewYearCharades = () => {
 
     // RESULTS SCREEN с новой статистикой для Blitz
     if (gameState === 'results') {
-    const sortedTeams = [...teams].sort((a, b) => b.score - a.score);
-    const winner = sortedTeams[0];
+        const sortedTeams = [...teams].sort((a, b) => b.score - a.score);
+        const winner = sortedTeams[0];
 
         return (
             <div className={`min-h-screen bg-gradient-to-br ${getThemeClasses()} p-4 overflow-y-auto`}>
