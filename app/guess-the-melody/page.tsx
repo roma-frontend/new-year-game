@@ -98,20 +98,20 @@ const GuessTheMelody = () => {
   { id: 16, file: '/songs/rus16.mp3', title: 'Трава у дома', artist: 'Земляне', difficulty: 'medium', year: '1983' },
 
   // АРМЯНСКИЕ КЛАССИЧЕСКИЕ (EASY/MEDIUM) - Все знают
-  { id: 17, file: '/songs/arm1.mp3', title: 'Կռունկ (Krounk)', artist: 'Ս. Նազարյան', difficulty: 'easy', year: '1980' },
-  { id: 18, file: '/songs/arm2.mp3', title: 'Երևան (Yerevan)', artist: 'Արմենչիկ', difficulty: 'easy', year: '2003' },
-  { id: 19, file: '/songs/arm3.mp3', title: 'Մեր Երևանը (Mer Yerevany)', artist: 'Ռուբեն Ահարոնյան', difficulty: 'easy', year: '1971' },
-  { id: 20, file: '/songs/arm4.mp3', title: 'Իմ անուշ հայրենիք (Im Anush Hayrenik)', artist: 'Վ. Սարգսյան', difficulty: 'easy', year: '1995' },
-  { id: 21, file: '/songs/arm5.mp3', title: 'Ծառ էի (Tsar ei)', artist: 'Հայկո', difficulty: 'medium', year: '2014' },
-  { id: 22, file: '/songs/arm6.mp3', title: 'Իմ մայրիկ (Im Mayrik)', artist: 'Արտաշես Ավետիսյան', difficulty: 'easy', year: '1970' },
-  { id: 23, file: '/songs/arm7.mp3', title: 'Արարատ (Ararat)', artist: 'Արտո Թունջբոյաջյան', difficulty: 'medium', year: '2005' },
+  { id: 17, file: '/songs/arm1.mp3', title: 'Երանի թե', artist: 'Գ. Կյոկչյան', difficulty: 'easy', year: '2014' },
+  { id: 18, file: '/songs/arm2.mp3', title: 'Դրախտի փերի', artist: 'Արամ Ասատրյան', difficulty: 'easy', year: '1998' },
+  { id: 19, file: '/songs/arm3.mp3', title: 'Ջան ջան', artist: 'Տաթև Ասատրյան', difficulty: 'easy', year: '2024' },
+  { id: 20, file: '/songs/arm4.mp3', title: 'Դու ես դու', artist: 'Ս. Թովմասյան', difficulty: 'easy', year: '2016' },
+  { id: 21, file: '/songs/arm5.mp3', title: 'Մի գնա', artist: 'Զոյա', difficulty: 'medium', year: '2022' },
+  { id: 22, file: '/songs/arm6.mp3', title: 'Ուշացած խոսքեր', artist: 'Հայկո և Քրիստինե Պեպելյան', difficulty: 'easy', year: '2008' },
+  { id: 23, file: '/songs/arm7.mp3', title: 'Loca Loca', artist: 'Հռիփսիմե Հակօբյան', difficulty: 'medium', year: '2018' },
 
   // АРМЯНСКИЕ ПОП (MEDIUM) - Современные хиты
-  { id: 24, file: '/songs/arm8.mp3', title: 'Բարի լույս (Bari Luys)', artist: 'Սնափ', difficulty: 'medium', year: '2020' },
-  { id: 25, file: '/songs/arm9.mp3', title: 'Քեզ համար (Kez Hamar)', artist: 'Արսեն', difficulty: 'medium', year: '2018' },
-  { id: 26, file: '/songs/arm10.mp3', title: 'Դու (Du)', artist: 'Թաթե (Tate)', difficulty: 'medium', year: '2021' },
-  { id: 27, file: '/songs/arm11.mp3', title: 'Հայաստան (Hayastan)', artist: 'Սիս (Sis)', difficulty: 'medium', year: '2015' },
-  { id: 28, file: '/songs/arm12.mp3', title: 'Մայրիկ (Mayrik)', artist: 'Արմեն Ալիյան', difficulty: 'easy', year: '2008' },
+  { id: 24, file: '/songs/arm8.mp3', title: 'կանաչ-կարմիր', artist: 'Սիլվա Հակոբյան', difficulty: 'medium', year: '2012' },
+  { id: 25, file: '/songs/arm9.mp3', title: 'Հոպ-հոպ Ջիվանի', artist: 'Արկադի Դումիկյան և Տիգրան Ասատրյան', difficulty: 'medium', year: '2023' },
+  { id: 26, file: '/songs/arm10.mp3', title: 'Լեբլեբու', artist: 'Արկադի Դումիկյան և Տիգրան Ասատրյան', difficulty: 'medium', year: '2024' },
+  { id: 27, file: '/songs/arm11.mp3', title: 'Տանեմ տանեմ', artist: 'Արսեն և Ահարոն Ալչանգյաններ', difficulty: 'medium', year: '2025' },
+  { id: 28, file: '/songs/arm12.mp3', title: 'Հատ հատ', artist: 'Հայկո և Զոյա', difficulty: 'easy', year: '2025' },
 
   // МЕЖДУНАРОДНЫЕ ХИТЫ (MEDIUM/HARD) - Всем известные
   { id: 29, file: '/songs/int1.mp3', title: 'Despacito', artist: 'Luis Fonsi', difficulty: 'medium', year: '2017' },
