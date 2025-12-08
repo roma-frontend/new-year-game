@@ -63,20 +63,8 @@ const GuessTheMelody = () => {
 
   const avatarColors = ['🔴', '🟠', '🟡', '🟢', '🔵', '🟣', '🟤', '⚫', '⚪', '🔷', '🔶', '⭐', '💎', '🎯', '🎨', '🎭'];
 
-  // const songs: Song[] = [
-  //   { id: 1, file: '/song1.mp3', title: 'My Kind of Present', artist: 'Meghan Trainor', difficulty: 'easy', year: '2022' },
-  //   { id: 2, file: '/song2.mp3', title: 'Snowman', artist: 'Sia', difficulty: 'medium', year: '2021' },
-  //   { id: 3, file: '/song3.mp3', title: 'White Christmas', artist: 'Bing Crosby', difficulty: 'easy', year: '1942' },
-  //   { id: 4, file: '/song4.mp3', title: 'Underneath the Tree', artist: 'Kelly Clarkson', difficulty: 'medium', year: '2020' },
-  //   { id: 5, file: '/song5.mp3', title: "It's Beginning to Look a Lot Like Christmas", artist: 'Michael Bublé', difficulty: 'easy', year: '2011' },
-  //   { id: 6, file: '/song6.mp3', title: 'Jingle Bells (Swing Version)', artist: 'Various Artists', difficulty: 'medium', year: '1857' },
-  //   { id: 7, file: '/song7.mp3', title: 'Merry Christmas', artist: 'Ed Sheeran & Elton John', difficulty: 'hard', year: '2021' },
-  //   { id: 8, file: '/song8.mp3', title: 'Blue Christmas', artist: 'Elvis Presley', difficulty: 'easy', year: '1957' },
-  //   { id: 9, file: '/song9.mp3', title: 'Christmas Tree Farm', artist: 'Taylor Swift', difficulty: 'medium', year: '2019' },
-  //   { id: 10, file: '/song10.mp3', title: 'Cindy Lou Who', artist: 'Sabrina Carpenter', difficulty: 'hard', year: '2023' },
-  // ];
-
-  const songs: Song[] = [
+  // Добавьте ваш массив songs здесь
+    const songs: Song[] = [
   // РУССКИЕ ПОПУЛЯРНЫЕ (EASY) - Очень известные
   { id: 1, file: '/songs/rus1.mp3', title: 'Миллион алых роз', artist: 'Алла Пугачева', difficulty: 'easy', year: '1983' },
   { id: 2, file: '/songs/rus2.mp3', title: 'Прекрасное далёко', artist: 'Е. Крылатов', difficulty: 'easy', year: '1984' },
@@ -156,9 +144,12 @@ const GuessTheMelody = () => {
 
   useEffect(() => {
     setIsMounted(true);
-    // Initialize audio element
-    audioRef.current = new Audio();
-    audioRef.current.volume = volume;
+    
+    // Инициализируем audio только на клиенте
+    if (typeof window !== 'undefined') {
+      audioRef.current = new Audio();
+      audioRef.current.volume = volume;
+    }
 
     return () => {
       if (audioRef.current) {
@@ -235,7 +226,7 @@ const GuessTheMelody = () => {
       setSongRevealed(false);
       startTimeRef.current = Date.now();
 
-      if (audioRef.current) {
+      if (audioRef.current && typeof window !== 'undefined') {
         audioRef.current.src = shuffled[0].file;
         audioRef.current.volume = volume;
 
@@ -244,7 +235,7 @@ const GuessTheMelody = () => {
         if (playPromise !== undefined) {
           playPromise.catch(e => {
             console.log('Audio play failed:', e);
-            alert('Не удалось загрузить аудио файл. Убедитесь, что файлы song1.mp3 - song10.mp3 находятся в папке /public/');
+            alert('Не удалось загрузить аудио файл. Убедитесь, что файлы находятся в папке /public/songs/');
           });
         }
       }
@@ -252,7 +243,7 @@ const GuessTheMelody = () => {
   };
 
   const togglePlayPause = () => {
-    if (audioRef.current) {
+    if (audioRef.current && typeof window !== 'undefined') {
       if (isPlaying) {
         audioRef.current.pause();
       } else {
@@ -328,7 +319,7 @@ const GuessTheMelody = () => {
       setIsPlaying(true);
       setGameStats(prev => ({ ...prev, songsPlayed: prev.songsPlayed + 1 }));
 
-      if (audioRef.current) {
+      if (audioRef.current && typeof window !== 'undefined') {
         audioRef.current.src = shuffledSongs[currentSongIndex + 1].file;
         audioRef.current.play().catch(e => console.log('Audio play failed:', e));
       }
@@ -398,8 +389,16 @@ const GuessTheMelody = () => {
     return '';
   };
 
+  if (!isMounted) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-purple-900 via-pink-900 to-red-900 flex items-center justify-center">
+        <div className="text-white text-2xl">Загрузка...</div>
+      </div>
+    );
+  }
+
   const Confetti = () => {
-    if (!showConfetti || !isMounted) return null;
+    if (!isMounted || !showConfetti) return null;
     return (
       <div className="fixed inset-0 pointer-events-none z-50 overflow-hidden">
         {[...Array(100)].map((_, i) => {
@@ -532,8 +531,6 @@ const GuessTheMelody = () => {
               </Button>
             </div>
 
-
-
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
               {players.map((player, index) => (
                 <div
@@ -592,7 +589,7 @@ const GuessTheMelody = () => {
     );
   }
 
-  if (gameState === 'playing') {
+  if (gameState === 'playing' && shuffledSongs.length > 0) {
     const currentSong = shuffledSongs[currentSongIndex];
     const progressPercent = (timeLeft / 45) * 100;
 
@@ -892,8 +889,7 @@ const GuessTheMelody = () => {
     );
   }
 
-  if (gameState === 'round-end') {
-    if (shuffledSongs.length === 0) return null;
+  if (gameState === 'round-end' && shuffledSongs.length > 0) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-teal-900 via-cyan-900 to-blue-900 p-8 flex items-center justify-center">
         {roundWinner && <Confetti />}
@@ -1149,7 +1145,6 @@ const GuessTheMelody = () => {
               <p className="text-4xl font-black mb-6 text-center text-yellow-300">
                 {loser.name}
               </p>
-              {/* <p className="text-3xl font-bold text-center mb-4">Պետք է կատարել:</p> */}
               <p className="text-5xl font-black text-center text-yellow-200 animate-bounce">
                 {wish}
               </p>
