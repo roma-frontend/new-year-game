@@ -80,7 +80,7 @@ const GeoMysteryGame = () => {
     const [isAddingTeam, setIsAddingTeam] = useState(false);
     const [mapInstance, setMapInstance] = useState<L.Map | null>(null);
     const [streetViewLoaded, setStreetViewLoaded] = useState(false);
-    
+
     // Новые состояния для системы ответов
     const [userAnswer, setUserAnswer] = useState('');
     const [answerRevealed, setAnswerRevealed] = useState(false);
@@ -599,14 +599,14 @@ const GeoMysteryGame = () => {
     // Նոր համակարգ պատասխանների համար
     const handleAnswerSubmit = () => {
         if (!userAnswer.trim() || answerRevealed) return;
-        
+
         playSound('click');
         setAnswerRevealed(true);
     };
 
     const handleAnswerCheck = (isCorrect: boolean) => {
         const currentQ = shuffledQuestions[currentQuestion];
-        
+
         if (isCorrect) {
             const newTeams = [...teams];
             let points = currentQ.points;
@@ -1222,8 +1222,8 @@ const GeoMysteryGame = () => {
 
                                                     <div className="space-y-2">
                                                         <div className="text-white/70 text-sm">Ձեր պատասխանը:</div>
-                                                        <Input 
-                                                            placeholder="Մուտքագրեք ձեր պատասխանը..." 
+                                                        <Input
+                                                            placeholder="Մուտքագրեք ձեր պատասխանը..."
                                                             className="bg-white/5 border-white/10 text-white"
                                                             disabled
                                                         />
@@ -1628,7 +1628,7 @@ const GeoMysteryGame = () => {
                                                     </div>
                                                 </div>
                                             </div>
-                                            
+
                                             <div className="flex items-center justify-between p-4 bg-black/30 rounded-xl">
                                                 <div className="text-white">
                                                     {shuffledQuestions[currentQuestion].country} • {shuffledQuestions[currentQuestion].continent}
@@ -1644,14 +1644,14 @@ const GeoMysteryGame = () => {
                                             <Button
                                                 onClick={() => handleAnswerCheck(true)}
                                                 disabled={answerStatus !== 'pending'}
-                                                className={`h-16 text-lg font-bold rounded-2xl transition-all ${answerStatus === 'correct' 
-                                                    ? 'bg-gradient-to-r from-emerald-600 to-green-600 border-4 border-emerald-400' 
+                                                className={`h-16 text-lg font-bold rounded-2xl transition-all ${answerStatus === 'correct'
+                                                    ? 'bg-gradient-to-r from-emerald-600 to-green-600 border-4 border-emerald-400'
                                                     : 'bg-gradient-to-r from-emerald-500 to-green-500 hover:from-emerald-400 hover:to-green-400'}`}
                                             >
                                                 <CheckCircle className="w-6 h-6 mr-3" />
                                                 Ճիշտ է
                                             </Button>
-                                            
+
                                             <Button
                                                 onClick={() => handleAnswerCheck(false)}
                                                 disabled={answerStatus !== 'pending'}
@@ -1666,11 +1666,11 @@ const GeoMysteryGame = () => {
 
                                         {/* Պատասխանի կարգավիճակ */}
                                         {answerStatus !== 'pending' && (
-                                            <div className={`text-center p-4 rounded-xl ${answerStatus === 'correct' 
-                                                ? 'bg-emerald-500/20 text-emerald-300' 
+                                            <div className={`text-center p-4 rounded-xl ${answerStatus === 'correct'
+                                                ? 'bg-emerald-500/20 text-emerald-300'
                                                 : 'bg-red-500/20 text-red-300'}`}>
-                                                {answerStatus === 'correct' 
-                                                    ? `🎉 Ճիշտ է! +${shuffledQuestions[currentQuestion].points} միավոր` 
+                                                {answerStatus === 'correct'
+                                                    ? `🎉 Ճիշտ է! +${shuffledQuestions[currentQuestion].points} միավոր`
                                                     : '😔 Սխալ է, միավորներ չեն հաշվարկվել'}
                                             </div>
                                         )}
@@ -1696,8 +1696,7 @@ const GeoMysteryGame = () => {
                                             setAnswerStatus('incorrect');
                                             setTimeout(() => nextQuestion(), 2000);
                                         }}
-                                        variant="outline"
-                                        className="background-transparent border-white/30 text-white/70 hover:bg-white/10"
+                                        className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-400 hover:to-red-400 text-white border-0"
                                     >
                                         <SkipForward className="w-5 h-5 mr-2" />
                                         Բաց թողնել հարցը
