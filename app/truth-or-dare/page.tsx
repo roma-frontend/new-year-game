@@ -75,12 +75,10 @@ const TruthOrDareGame = () => {
   const [loserForPunishment, setLoserForPunishment] = useState<Player | null>(null);
 
   const startTimeRef = useRef<number>(0);
-  const drumRollRef = useRef<any>(null);
   const timerIntervalRef = useRef<any>(null);
 
   const avatars = ['🎅', '🤶', '🧝', '⛄', '🦌', '🎄', '⭐', '🎁', '❄️', '🔔', '🕯️', '🎊'];
 
-  // ВАШ МАССИВ CHALLENGES ЗДЕСЬ
 const challenges: Challenge[] = [
   // ՊԱՏԱՍԽԱՆ - Ծիծաղելի
   { 
@@ -546,7 +544,6 @@ const categoryColors: CategoryColors = {
   'new-year': { bg: 'from-red-400 to-green-500', text: 'text-red-700', icon: '🎄' }
 };
 
-  // Желания для победителя (можно изменить)
 const winnerPunishments = [
   // 🎭 Актерские
   'Դառնալ սենյակի "մարդ-ռադիո". 2 րոպե խոսել միայն հայտարարություններով, կարծես ռադիոհաղորդում ես վարում',
