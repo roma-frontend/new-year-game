@@ -1151,7 +1151,7 @@ const PuzzleBattleGame = () => {
                             <div className="absolute -inset-1 bg-gradient-to-r from-amber-500/30 to-orange-500/30 rounded-3xl blur opacity-0 group-hover:opacity-100 transition duration-500" />
                             <Card className="relative p-12 bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-2xl border-2 border-white/20 shadow-2xl">
                                 <div className="text-8xl mb-8 animate-bounce">🎯</div>
-                                <h2 className="text-5xl font-bold bg-gradient-to-r from-amber-400 to-orange-400 bg-clip-text text-transparent mb-6">
+                                <h2 className="text-[70px] font-bold bg-gradient-to-r from-amber-400 to-orange-400 bg-clip-text text-transparent mb-6">
                                     Թեմաները Շնորհված են!
                                 </h2>
                                 <p className="text-xl text-white/70 mb-12 max-w-2xl mx-auto">
