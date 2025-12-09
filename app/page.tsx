@@ -170,6 +170,20 @@ const NewYearLanding = () => {
               </span>
             </Button>
 
+
+            <Button
+              onClick={() => router.push("/puzzle-battle")}
+              className="group relative px-12 py-8 text-3xl font-bold rounded-2xl overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-2xl"
+            >
+              <div className="absolute inset-0 bg-gradient-to-r from-yellow-500 via-orange-500 to-red-500 animate-gradient"></div>
+              <div className="absolute inset-0 bg-gradient-to-r from-yellow-400 via-orange-400 to-red-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              <span className="relative z-10 flex items-center gap-4">
+                <Gift className="w-10 h-10 animate-bounce" />
+                Պազլ-Մարտ
+                <PartyPopper className="w-10 h-10 animate-bounce" style={{ animationDelay: '0.2s' }} />
+              </span>
+            </Button>
+
             <Button
               onClick={() => router.push("/movie-quiz-game")}
               className="group relative px-12 py-8 text-3xl font-bold rounded-2xl overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-2xl"
